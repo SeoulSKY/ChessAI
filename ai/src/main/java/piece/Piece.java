@@ -27,6 +27,14 @@ public abstract class Piece {
     }
 
     /**
+     * Check if this is bot piece
+     * @return true if it is, false otherwise
+     */
+    public boolean isBot() {
+        return this.player.isBot();
+    }
+
+    /**
      * Move the piece to the given position
      * @param newPosition the new position to move to
      */
@@ -135,4 +143,12 @@ public abstract class Piece {
     }
 
     public abstract String toString();
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        return this.isBot() == ((Piece) obj).isBot() && this.getPosition().equals(((Piece) obj).getPosition());
+    }
 }

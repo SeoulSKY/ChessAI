@@ -3,10 +3,7 @@ package game;
 import piece.*;
 import util.Position;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Player implements Cloneable {
 
@@ -79,6 +76,128 @@ public class Player implements Cloneable {
     }
 
     /**
+     * Return the number of pawns alive
+     * @return the number of pawns
+     */
+    public int countPawns() {
+        return this.countAlivePieces(this.pawns);
+    }
+
+    /**
+     * Return the number of bishops alive
+     * @return the number of bishops
+     */
+    public int countBishops() {
+        return this.countAlivePieces(this.bishops);
+    }
+
+    /**
+     * Return the number of knights alive
+     * @return the number of knights
+     */
+    public int countKnights() {
+        return this.countAlivePieces(this.knights);
+    }
+
+    /**
+     * Return the number of rooks alive
+     * @return the number of rooks
+     */
+    public int countRooks() {
+        return this.countAlivePieces(this.rooks);
+    }
+
+    /**
+     * Return the number of queens alive
+     * @return the number of queens
+     */
+    public int countQueens() {
+        return this.queen.isAlive() ? 1 : 0;
+    }
+
+    /**
+     * Return the number of kings alive
+     * @return the number of kings
+     */
+    public int countKings() {
+        return this.king.isAlive() ? 1 : 0;
+    }
+
+    /**
+     * Return the number of doubled pawns
+     * @return the number
+     */
+    public int countDoubledPawns() {
+        List<Position> positions = this.pawns.stream()
+                .filter(Piece::isAlive)
+                .map(Piece::getPosition)
+                .sorted(Comparator.comparing(Position::getX))
+                .toList();
+
+        int count = 0;
+        int prevX = -1;
+        for (Position position : positions) {
+            if (position.getX() == prevX) {
+                count += 1;
+            }
+            prevX = position.getY();
+        }
+
+        return count;
+    }
+
+    /**
+     * Return the number of blocked pawns
+     * @param opponent the opponent of the player
+     * @return the number
+     */
+    public int countBlockedPawns(Player opponent) {
+        return this.pawns.stream()
+                .filter(Piece::isAlive)
+                .map(p -> new Position(p.getX(), this.isBot() ? p.getY()+1 : p.getY()-1))
+                .filter(p -> this.isOccupied(p) || opponent.isOccupied(p))
+                .toArray().length;
+    }
+
+    /**
+     * Return the number of isolated pawns
+     * @return the number
+     */
+    public int countIsolatedPawns() {
+        List<Piece> alivePawns = this.pawns.stream().filter(Piece::isAlive).toList();
+
+        int count = 0;
+        for (Piece p1 : alivePawns) {
+            boolean foundNeighbor = false;
+            for (Piece p2 : alivePawns) {
+                if (p1 == p2) continue;
+
+                if (Math.abs(p1.getX() - p2.getX()) <= 1) {
+                    foundNeighbor = true;
+                    break;
+                }
+            }
+
+            if (!foundNeighbor) {
+                count += 1;
+            }
+        }
+
+        return count;
+    }
+
+    /**
+     * Return the number of pieces alive
+     * @param pieces the pieces to check
+     * @return the number of alive pieces
+     */
+    protected int countAlivePieces(List<Piece> pieces) {
+        return pieces.stream()
+                .filter(Piece::isAlive)
+                .toArray().length;
+    }
+
+    /**
      * Return all pieces of the player including dead pieces
      */
     public Collection<Piece> allPieces() {
@@ -108,6 +227,17 @@ public class Player implements Cloneable {
         return this.allPieces().stream()
                 .filter(Piece::isDead)
                 .toList();
+    }
+
+    /**
+     * Find the piece at the given position
+     * @param position the position
+     * @return the piece
+     */
+    public Optional<Piece> findPiece(Position position) {
+        return this.alivePieces().stream()
+                .filter(piece -> piece.getPosition().equals(position))
+                .findAny();
     }
 
     /**

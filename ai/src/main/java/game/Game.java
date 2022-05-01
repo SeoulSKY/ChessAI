@@ -1,11 +1,28 @@
 package game;
 
+import org.jetbrains.annotations.Nullable;
+import piece.Piece;
+
 import java.util.Collection;
 
 /**
  * The chess game
  */
 public class Game {
+
+    protected static final double NUM_KING_WEIGHT = 200.0;
+
+    protected static final double NUM_QUEEN_WEIGHT = 9.0;
+
+    protected static final double NUM_ROOKS_WEIGHT = 5.0;
+
+    protected static final double NUM_BISHOPS_KNIGHTS_WEIGHT = 3.0;
+
+    protected static final double NUM_PAWNS_WEIGHT = 1.0;
+
+    protected static final double PAWNS_LOCATION_WEIGHT = 0.5;
+
+    protected static final double MOBILITY_WEIGHT = 0.1;
 
     protected int depthLimit;
 
@@ -72,8 +89,41 @@ public class Game {
      * @param action the action
      * @return the new state
      */
-    public State result(State state, Action action) {
-        return null;
+    public State result(State state, @Nullable Action action) {
+        State newState = state.clone();
+
+        if (action == null) {
+            newState.setOutcome(null);
+            return newState;
+        }
+
+        Player myPlayer, opponent;
+        if (action.getPiece().isBot()) {
+            myPlayer = newState.getBotPlayer();
+            opponent = newState.getHumanPlayer();
+        } else {
+            myPlayer = newState.getHumanPlayer();
+            opponent = newState.getBotPlayer();
+        }
+
+        Piece myPiece = myPlayer.findPiece(action.getPiece().getPosition()).orElseThrow();
+        myPiece.moveTo(action.getNewPosition());
+
+        opponent.findPiece(myPiece.getPosition())
+                .ifPresent(Piece::kill);
+
+        boolean isMyKingAlive = myPlayer.countKings() == 1;
+        boolean isOpponentKingAlive = opponent.countKings() == 1;
+
+        if (myPlayer.alivePieces().size() == 1 && isMyKingAlive && opponent.alivePieces().size() == 1 && isOpponentKingAlive) {
+            newState.setOutcome(null);
+        } else if (!isMyKingAlive) {
+            newState.setOutcome(opponent);
+        } else if (!isOpponentKingAlive) {
+            newState.setOutcome(myPlayer);
+        }
+
+        return newState;
     }
 
     /**
@@ -81,8 +131,20 @@ public class Game {
      * @param state a terminal state
      * @return the utility of the terminal state
      */
-    public int utility(State state) {
-        return 0;
+    public double utility(State state) {
+        if (!this.isTerminal(state)) {
+            throw new IllegalArgumentException("This method shouldn't be used for a non-terminal state.");
+        }
+
+        if (state.getWinner().isEmpty()) {
+            return 0.0;
+        }
+
+        if (state.getWinner().get().isBot()) {
+            return Double.MAX_VALUE;
+        } else {
+            return Double.MIN_VALUE;
+        }
     }
 
     /**
@@ -90,7 +152,25 @@ public class Game {
      * @param state a non-terminal state
      * @return the evaluated value
      */
-    public int evaluate(State state) {
-        return 0;
+    public double evaluate(State state) {
+        if (this.isTerminal(state)) {
+            throw new IllegalArgumentException("This method shouldn't be used for a terminal state.");
+        }
+
+        Player botPlayer = state.getBotPlayer();
+        Player humanPlayer = state.getHumanPlayer();
+
+        return NUM_KING_WEIGHT * (botPlayer.countKings() - humanPlayer.countKings())
+                + NUM_QUEEN_WEIGHT * (botPlayer.countQueens() - humanPlayer.countQueens())
+                + NUM_ROOKS_WEIGHT * (botPlayer.countRooks() - humanPlayer.countRooks())
+                + NUM_BISHOPS_KNIGHTS_WEIGHT * (
+                        botPlayer.countBishops() - humanPlayer.countBishops()
+                                + botPlayer.countKnights() - humanPlayer.countKnights())
+                + NUM_PAWNS_WEIGHT * (botPlayer.countPawns() - humanPlayer.countPawns())
+                - PAWNS_LOCATION_WEIGHT * (
+                        botPlayer.countDoubledPawns() - humanPlayer.countDoubledPawns()
+                                + botPlayer.countBlockedPawns(humanPlayer) - humanPlayer.countBlockedPawns(botPlayer)
+                                + botPlayer.countIsolatedPawns() - humanPlayer.countIsolatedPawns())
+                + MOBILITY_WEIGHT * (botPlayer.actions(humanPlayer).size() - humanPlayer.actions(botPlayer).size());
     }
 }

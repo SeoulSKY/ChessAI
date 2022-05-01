@@ -5,11 +5,11 @@ import util.Position;
 
 public class Action {
     protected Piece piece;
-    protected Position moveTo;
+    protected Position newPosition;
 
-    public Action(Piece piece, Position moveTo) {
+    public Action(Piece piece, Position newPosition) {
         this.piece = piece;
-        this.moveTo = moveTo;
+        this.newPosition = newPosition;
     }
 
     /**
@@ -24,11 +24,11 @@ public class Action {
      * Get the new position of the action
      * @return the new position
      */
-    public Position getMoveTo() {
-        return moveTo;
+    public Position getNewPosition() {
+        return newPosition;
     }
 
     public String toString() {
-        return "(" + this.piece.toString() + ", " + this.moveTo.getY() + ", " + this.moveTo.getX() + ")";
+        return "(" + this.piece.toString() + ", " + this.newPosition.getY() + ", " + this.newPosition.getX() + ")";
     }
 }

@@ -14,7 +14,7 @@ public class Pawn extends Piece {
 
     @Override
     public Collection<Position> movements(Player opponent) {
-        if (this.player.isBot()) {
+        if (this.isBot()) {
             return this.botMovements(opponent);
         }
 
@@ -23,7 +23,7 @@ public class Pawn extends Piece {
 
     @Override
     public String toString() {
-        return this.player.isBot() ? "♟" : "♙";
+        return this.isBot() ? "♟" : "♙";
     }
 
     /**
