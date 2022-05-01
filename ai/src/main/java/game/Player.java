@@ -3,7 +3,10 @@ package game;
 import piece.*;
 import util.Position;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Player implements Cloneable {
 
