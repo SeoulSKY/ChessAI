@@ -27,7 +27,7 @@ public abstract class Piece {
     }
 
     /**
-     * Check if this is bot piece
+     * Check if this is a bot piece
      * @return true if it is, false otherwise
      */
     public boolean isBot() {
@@ -39,7 +39,7 @@ public abstract class Piece {
      * @param newPosition the new position to move to
      */
     public void moveTo(Position newPosition) {
-        if (this.isAlive()) {
+        if (this.isDead()) {
             throw new IllegalStateException("Cannot move a dead piece.");
         }
 
@@ -51,7 +51,7 @@ public abstract class Piece {
      * @return the position
      */
     public Position getPosition() {
-        if (!this.isAlive()) {
+        if (this.isDead()) {
             throw new IllegalStateException("This piece is dead and doesn't have a position.");
         }
         return this.position;
@@ -104,24 +104,25 @@ public abstract class Piece {
     public abstract Collection<Position> movements(Player opponent);
 
     /**
-     * Return all possible movements of the given piece to the given direction
-     * @param piece the piece to get the movements
+     * Return all possible movements of the given piece to the given directions
      * @param opponent the opponent player of the given piece
-     * @param direction the direction to get the movements
+     * @param directions the directions to get the movements
      * @return the movements to the direction
      */
-    protected Collection<Position> movements(Piece piece, Player opponent, Direction direction) {
+    protected Collection<Position> movements(Player opponent, Direction[] directions) {
         List<Position> movements = new LinkedList<>();
-        Cursor cursor = new Cursor(piece.getX(), piece.getY(), direction);
+        for (Direction direction : directions) {
+            Cursor cursor = new Cursor(this.getX(), this.getY(), direction);
 
-        cursor.move();
-        while (cursor.canMove() && !piece.player.isOccupied(cursor.getPosition()) && !opponent.isOccupied(cursor.getPosition())) {
-            movements.add(cursor.getPosition());
             cursor.move();
-        }
+            while (cursor.canMove() && !this.player.isOccupied(cursor.getPosition()) && !opponent.isOccupied(cursor.getPosition())) {
+                movements.add(cursor.getPosition());
+                cursor.move();
+            }
 
-        if (opponent.isOccupied(cursor.getPosition())) {
-            movements.add(cursor.getPosition());
+            if (opponent.isOccupied(cursor.getPosition())) {
+                movements.add(cursor.getPosition());
+            }
         }
 
         return movements;

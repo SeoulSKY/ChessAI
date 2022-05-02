@@ -140,7 +140,7 @@ public class Player implements Cloneable {
             if (position.getX() == prevX) {
                 count += 1;
             }
-            prevX = position.getY();
+            prevX = position.getX();
         }
 
         return count;
@@ -244,7 +244,7 @@ public class Player implements Cloneable {
      * Check if the given x and y are occupied by any piece of the player
      */
     public boolean isOccupied(int x, int y) {
-        return isOccupied(new Position(x, y));
+        return this.isOccupied(new Position(x, y));
     }
 
     /**

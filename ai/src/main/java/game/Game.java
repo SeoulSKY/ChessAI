@@ -123,6 +123,8 @@ public class Game {
             newState.setOutcome(myPlayer);
         }
 
+        newState.moveToNextPlayerTurn();
+
         return newState;
     }
 

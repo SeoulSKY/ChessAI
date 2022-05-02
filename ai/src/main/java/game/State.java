@@ -57,8 +57,19 @@ public class State implements Cloneable {
         return this.isBotTurn;
     }
 
+    /**
+     * Check if it is the human turn
+     * @return true if it is, false otherwise
+     */
     public boolean isHumanTurn() {
         return !this.isBotTurn();
+    }
+
+    /**
+     * Move on to the next player's turn
+     */
+    public void moveToNextPlayerTurn() {
+        this.isBotTurn = !this.isBotTurn();
     }
 
     /**
