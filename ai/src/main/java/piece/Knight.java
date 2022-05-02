@@ -10,6 +10,11 @@ import java.util.List;
  * The knight piece of the chess
  */
 public class Knight extends Piece {
+
+    public static final char BLACK_ICON = '♞';
+
+    public static final char WHITE_ICON = '♘';
+
     public Knight(Player player, Position position) {
         super(player, position);
     }
@@ -36,7 +41,12 @@ public class Knight extends Piece {
     }
 
     @Override
-    public String toString() {
-        return this.isBot() ? "♞" : "♘";
+    public char getBlackIcon() {
+        return BLACK_ICON;
+    }
+
+    @Override
+    public char getWhiteIcon() {
+        return WHITE_ICON;
     }
 }

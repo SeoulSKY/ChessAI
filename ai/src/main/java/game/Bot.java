@@ -7,16 +7,28 @@ import java.util.Map;
 
 public class Bot {
 
-    protected Game game;
+    protected final Game game;
+
+    protected final int intelligence;
 
     protected Map<State, Double> transpositionTable;
 
-    protected int numNodeExpanded;
+    protected int numNodesExpanded;
 
-    public Bot(Game game) {
-        this.game = game;
+    public Bot(int intelligence) {
+        this.game = new Game();
+        this.intelligence = intelligence;
         this.transpositionTable = new HashMap<>();
-        this.numNodeExpanded = 0;
+        this.numNodesExpanded = 0;
+    }
+
+    /**
+     * Check if the given depth exceeded the depth limit of the game
+     * @param depth the depth to check
+     * @return true if it should, false otherwise
+     */
+    protected boolean shouldCutOff(int depth) {
+        return depth > this.intelligence;
     }
 
     /**
@@ -28,12 +40,12 @@ public class Bot {
         Instant startTime = Instant.now();
 
         this.transpositionTable.clear();
-        this.numNodeExpanded = 0;
+        this.numNodesExpanded = 0;
 
         double minimaxValue = Double.NEGATIVE_INFINITY;
         Action bestAction = null;
         State nextState = null;
-        this.numNodeExpanded++;
+        this.numNodesExpanded++;
 
         double botBest = Double.NEGATIVE_INFINITY;
         double humanBest = Double.POSITIVE_INFINITY;
@@ -51,10 +63,14 @@ public class Bot {
             botBest = Math.max(botBest, minimaxValue);
         }
 
+        if (bestAction == null) {
+            return null;
+        }
+
         Instant endTime = Instant.now();
         Duration timeTaken = Duration.between(startTime, endTime);
 
-        return new DecisionRecord(timeTaken, minimaxValue, bestAction, nextState, this.numNodeExpanded);
+        return new DecisionRecord(timeTaken, minimaxValue, bestAction, nextState.toString(), this.numNodesExpanded);
     }
 
     /**
@@ -70,12 +86,12 @@ public class Bot {
             return this.transpositionTable.get(state);
         } else if (this.game.isTerminal(state)) {
             return this.game.utility(state);
-        } else if (this.game.shouldCutOff(depth)) {
+        } else if (this.shouldCutOff(depth)) {
             return this.game.evaluate(state);
         }
 
         double maxBestHere = Double.NEGATIVE_INFINITY;
-        this.numNodeExpanded++;
+        this.numNodesExpanded++;
 
         for (Action action : this.game.actions(state)) {
             State result = this.game.result(state, action);
@@ -110,12 +126,12 @@ public class Bot {
             return this.transpositionTable.get(state);
         } else if (this.game.isTerminal(state)) {
             return this.game.utility(state);
-        } else if (this.game.shouldCutOff(depth)) {
+        } else if (this.shouldCutOff(depth)) {
             return this.game.evaluate(state);
         }
 
         double minBestHere = Double.POSITIVE_INFINITY;
-        this.numNodeExpanded++;
+        this.numNodesExpanded++;
 
         for (Action action : this.game.actions(state)) {
             State result = this.game.result(state, action);

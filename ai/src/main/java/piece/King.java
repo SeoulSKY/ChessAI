@@ -11,8 +11,13 @@ import java.util.List;
  * The king piece of the chess
  */
 public class King extends Piece {
+
+    public static final char BLACK_ICON = '♚';
+
+    public static final char WHITE_ICON = '♔';
+
     public King(Player player, Position position) {
-        super(player, position);
+    super(player, position);
     }
 
     @Override
@@ -35,7 +40,12 @@ public class King extends Piece {
     }
 
     @Override
-    public String toString() {
-        return this.isBot() ? "♚" : "♔";
+    public char getBlackIcon() {
+        return BLACK_ICON;
+    }
+
+    @Override
+    public char getWhiteIcon() {
+        return WHITE_ICON;
     }
 }

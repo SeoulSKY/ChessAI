@@ -24,20 +24,6 @@ public class Game {
 
     protected static final double MOBILITY_WEIGHT = 0.1;
 
-    protected int depthLimit;
-
-    public Game(int depthLimit) {
-        this.depthLimit = depthLimit;
-    }
-
-    /**
-     * Get the initial state of the game
-     * @return the initial state
-     */
-    public State getInitialState() {
-        return new State();
-    }
-
     /**
      * Check if the given state is bot turn
      * @param state the state
@@ -66,15 +52,6 @@ public class Game {
     }
 
     /**
-     * Check if the given depth exceeded the depth limit of the game
-     * @param depth the depth to check
-     * @return true if it should, false otherwise
-     */
-    public boolean shouldCutOff(int depth) {
-        return depth > this.depthLimit;
-    }
-
-    /**
      * Return all possible actions of the given state
      * @param state the state
      * @return the actions
@@ -98,7 +75,7 @@ public class Game {
         }
 
         Player myPlayer, opponent;
-        if (action.getPiece().isBot()) {
+        if (action.piece().isBot()) {
             myPlayer = newState.getBotPlayer();
             opponent = newState.getHumanPlayer();
         } else {
@@ -106,16 +83,15 @@ public class Game {
             opponent = newState.getBotPlayer();
         }
 
-        Piece myPiece = myPlayer.findPiece(action.getPiece().getPosition()).orElseThrow();
-        myPiece.moveTo(action.getNewPosition());
+        Piece myPiece = myPlayer.findPiece(action.piece().getPosition()).orElseThrow();
+        myPiece.moveTo(action.newPosition());
 
-        opponent.findPiece(myPiece.getPosition())
-                .ifPresent(Piece::kill);
+        opponent.killPiece(myPiece.getPosition());
 
         boolean isMyKingAlive = myPlayer.countKings() == 1;
         boolean isOpponentKingAlive = opponent.countKings() == 1;
 
-        if (myPlayer.alivePieces().size() == 1 && isMyKingAlive && opponent.alivePieces().size() == 1 && isOpponentKingAlive) {
+        if (myPlayer.allPieces().size() == 1 && isMyKingAlive && opponent.allPieces().size() == 1 && isOpponentKingAlive) {
             newState.setOutcome(null);
         } else if (!isMyKingAlive) {
             newState.setOutcome(opponent);

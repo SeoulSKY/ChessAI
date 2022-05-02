@@ -18,11 +18,8 @@ public abstract class Piece {
 
     protected Position position;
 
-    protected boolean isAlive;
-
     public Piece(Player player, Position position) {
         this.player = player;
-        this.isAlive = true;
         this.position = position;
     }
 
@@ -39,10 +36,6 @@ public abstract class Piece {
      * @param newPosition the new position to move to
      */
     public void moveTo(Position newPosition) {
-        if (this.isDead()) {
-            throw new IllegalStateException("Cannot move a dead piece.");
-        }
-
         this.position = newPosition;
     }
 
@@ -51,9 +44,6 @@ public abstract class Piece {
      * @return the position
      */
     public Position getPosition() {
-        if (this.isDead()) {
-            throw new IllegalStateException("This piece is dead and doesn't have a position.");
-        }
         return this.position;
     }
 
@@ -62,7 +52,7 @@ public abstract class Piece {
      * @return the x
      */
     public int getX() {
-        return this.getPosition().getX();
+        return this.getPosition().x();
     }
 
     /**
@@ -70,30 +60,7 @@ public abstract class Piece {
      * @return the y
      */
     public int getY() {
-        return this.getPosition().getY();
-    }
-
-    /**
-     * Check if the piece is alive
-     * @return true if it is, false otherwise
-     */
-    public boolean isAlive() {
-        return this.isAlive;
-    }
-
-    /**
-     * Check if the piece is dead
-     * @return true if it is, false otherwise
-     */
-    public boolean isDead() {
-        return !this.isAlive();
-    }
-
-    /**
-     * Set the piece dead
-     */
-    public void kill() {
-        this.isAlive = false;
+        return this.getPosition().y();
     }
 
     /**
@@ -102,6 +69,18 @@ public abstract class Piece {
      * @return the movements
      */
     public abstract Collection<Position> movements(Player opponent);
+
+    /**
+     * Get a string that represents this piece for the black player
+     * @return the icon
+     */
+    public abstract char getBlackIcon();
+
+    /**
+     * Get a string that represents this piece for the white player
+     * @return the icon
+     */
+    public abstract char getWhiteIcon();
 
     /**
      * Return all possible movements of the given piece to the given directions
@@ -143,13 +122,18 @@ public abstract class Piece {
         }
     }
 
-    public abstract String toString();
+    public String toString() {
+        return String.valueOf(this.isBot() ? this.getBlackIcon() : this.getWhiteIcon());
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (!super.equals(obj)) {
             return false;
         }
-        return this.isBot() == ((Piece) obj).isBot() && this.getPosition().equals(((Piece) obj).getPosition());
+
+        Piece other = (Piece) obj;
+        return this.isBot() == other.isBot() && this.getPosition().equals(other.getPosition()) &&
+                this.getBlackIcon() == other.getBlackIcon() && this.getWhiteIcon() == other.getWhiteIcon();
     }
 }

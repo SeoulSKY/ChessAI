@@ -11,6 +11,10 @@ import java.util.Collection;
  */
 public class Queen extends Piece {
 
+    public static final char BLACK_ICON = '♛';
+
+    public static final char WHITE_ICON = '♕';
+
     protected static final Direction[] directions = {Direction.UPLEFT, Direction.UPRIGHT, Direction.DOWNLEFT,
             Direction.DOWNRIGHT, Direction.LEFT, Direction.RIGHT, Direction.UP, Direction.DOWN};
 
@@ -24,7 +28,12 @@ public class Queen extends Piece {
     }
 
     @Override
-    public String toString() {
-        return this.isBot() ? "♛" : "♕";
+    public char getBlackIcon() {
+        return BLACK_ICON;
+    }
+
+    @Override
+    public char getWhiteIcon() {
+        return WHITE_ICON;
     }
 }

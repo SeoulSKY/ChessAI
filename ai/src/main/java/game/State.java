@@ -1,8 +1,12 @@
 package game;
 
 import org.jetbrains.annotations.Nullable;
+import piece.*;
+import util.Position;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -22,15 +26,12 @@ public class State implements Cloneable {
 
     protected Player winner;
 
-    protected String stringed;
-
     public State() {
         this.botPlayer = new Player(true);
         this.humanPlayer = new Player(false);
         this.isBotTurn = true;
         this.isTerminal = false;
         this.winner = null;
-        this.stringed = this.toString();
     }
 
     /**
@@ -118,7 +119,7 @@ public class State implements Cloneable {
         StringBuilder builder = new StringBuilder();
         String[][] board = new String[BOARD_SIZE][BOARD_SIZE];
 
-        Stream.concat(this.botPlayer.alivePieces().stream(), this.humanPlayer.alivePieces().stream())
+        Stream.concat(this.botPlayer.allPieces().stream(), this.humanPlayer.allPieces().stream())
                 .toList()
                 .forEach(piece -> board[piece.getY()][piece.getX()] = piece.toString());
 
@@ -128,9 +129,52 @@ public class State implements Cloneable {
                     board[i][j] = "□";
                 }
             }
-            builder.append(String.join(" ", board[i])).append('\n');
+            builder.append(String.join("", board[i])).append('\n');
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Parse the given board into the state
+     * @param board the board
+     * @param isBotTurn whether it is a bot turn or not
+     * @return the state
+     */
+    public static State parse(String board, boolean isBotTurn) {
+        Set<Piece> botPieces = new HashSet<>();
+        Set<Piece> humanPieces = new HashSet<>();
+        Player botPlayer = new Player(true, botPieces);
+        Player humanPlayer = new Player(false, humanPieces);
+
+        String[] lines = board.split("\n");
+
+        for (int i = 0; i < lines.length; i++) {
+            char[] chars = lines[i].toCharArray();
+            for (int j = 0; j < lines[i].length(); j++) {
+                Position position = new Position(i, j);
+                switch (chars[i]) {
+                    case Bishop.BLACK_ICON -> botPieces.add(new Bishop(botPlayer, position));
+                    case Bishop.WHITE_ICON -> humanPieces.add(new Bishop(humanPlayer, position));
+                    case King.BLACK_ICON -> botPieces.add(new King(botPlayer, position));
+                    case King.WHITE_ICON -> humanPieces.add(new King(humanPlayer, position));
+                    case Knight.BLACK_ICON -> botPieces.add(new Knight(botPlayer, position));
+                    case Knight.WHITE_ICON -> humanPieces.add(new Knight(humanPlayer, position));
+                    case Pawn.BLACK_ICON -> botPieces.add(new Pawn(botPlayer, position));
+                    case Pawn.WHITE_ICON -> humanPieces.add(new Pawn(humanPlayer, position));
+                    case Queen.BLACK_ICON -> botPieces.add(new Queen(botPlayer, position));
+                    case Queen.WHITE_ICON -> humanPieces.add(new Queen(humanPlayer, position));
+                    case Rook.BLACK_ICON -> botPieces.add(new Rook(botPlayer, position));
+                    case Rook.WHITE_ICON -> humanPieces.add(new Rook(humanPlayer, position));
+                }
+            }
+        }
+
+        State state = new State();
+        state.botPlayer = botPlayer;
+        state.humanPlayer = humanPlayer;
+        state.isBotTurn = isBotTurn;
+
+        return state;
     }
 }

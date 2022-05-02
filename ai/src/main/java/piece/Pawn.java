@@ -8,6 +8,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Pawn extends Piece {
+
+    public static final char BLACK_ICON = '♟';
+
+    public static final char WHITE_ICON = '♙';
+
     public Pawn(Player player, Position position) {
         super(player, position);
     }
@@ -22,8 +27,13 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public String toString() {
-        return this.isBot() ? "♟" : "♙";
+    public char getBlackIcon() {
+        return BLACK_ICON;
+    }
+
+    @Override
+    public char getWhiteIcon() {
+        return WHITE_ICON;
     }
 
     /**

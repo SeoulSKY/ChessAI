@@ -87,7 +87,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveLeft() {
-        return Position.isWithinBound(x - 1, y);
+        return Position.isWithinBound(this.x - 1, this.y);
     }
 
     /**
@@ -106,7 +106,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveRight() {
-        return Position.isWithinBound(x + 1, y);
+        return Position.isWithinBound(this.x + 1, this.y);
     }
 
     /**
@@ -125,7 +125,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveUp() {
-        return Position.isWithinBound(x, y - 1);
+        return Position.isWithinBound(this.x, this.y - 1);
     }
 
     /**
@@ -144,7 +144,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveDown() {
-        return Position.isWithinBound(x, y + 1);
+        return Position.isWithinBound(this.x, this.y + 1);
     }
 
     /**
@@ -163,7 +163,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveUpLeft() {
-        return Position.isWithinBound(x - 1, y - 1);
+        return Position.isWithinBound(this.x - 1, this.y - 1);
     }
 
     /**
@@ -183,7 +183,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveUpRight() {
-        return Position.isWithinBound(x + 1, y - 1);
+        return Position.isWithinBound(this.x + 1, this.y - 1);
     }
 
     /**
@@ -203,7 +203,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveDownLeft() {
-        return Position.isWithinBound(x - 1, y + 1);
+        return Position.isWithinBound(this.x - 1, this.y + 1);
     }
 
     /**
@@ -223,7 +223,7 @@ public class Cursor {
      * @return true if it can, false otherwise
      */
     protected boolean canMoveDownRight() {
-        return Position.isWithinBound(x + 1, y + 1);
+        return Position.isWithinBound(this.x + 1, this.y + 1);
     }
 
     /**

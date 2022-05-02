@@ -3,14 +3,7 @@ package util;
 /**
  * The position of the chess board
  */
-public class Position {
-    protected int x;
-    protected int y;
-
-    public Position(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
+public record Position(int x, int y) {
 
     /**
      * Check if the given x and y are within the bound of the chess board
@@ -28,31 +21,10 @@ public class Position {
      * @return true if it is, false otherwise
      */
     public static boolean isWithinBound(Position position) {
-        return isWithinBound(position.getX(), position.getY());
+        return isWithinBound(position.x(), position.y());
     }
 
-    /**
-     * Get the x position
-     * @return the x position
-     */
-    public int getX() {
-        return this.x;
-    }
-
-    /**
-     * Get the y position
-     * @return the y position
-     */
-    public int getY() {
-        return this.y;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Position)) {
-            return false;
-        }
-
-        return this.getX() == ((Position) obj).getX() && this.getY() == ((Position) obj).getY();
+    public String toString() {
+        return this.x() + ", " + this.y();
     }
 }

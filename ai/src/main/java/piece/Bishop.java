@@ -14,8 +14,12 @@ public class Bishop extends Piece {
     protected static final Direction[] directions = {Direction.UPLEFT, Direction.UPRIGHT, Direction.DOWNLEFT,
             Direction.DOWNRIGHT};
 
+    public static final char BLACK_ICON = '♝';
+
+    public static final char WHITE_ICON = '♗';
+
     public Bishop(Player player, Position position) {
-        super(player, position);
+    super(player, position);
     }
 
     @Override
@@ -24,7 +28,12 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public String toString() {
-        return this.isBot() ? "♝" : "♗";
+    public char getBlackIcon() {
+        return BLACK_ICON;
+    }
+
+    @Override
+    public char getWhiteIcon() {
+        return WHITE_ICON;
     }
 }
