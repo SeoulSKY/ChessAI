@@ -25,6 +25,6 @@ public record Position(int x, int y) {
     }
 
     public String toString() {
-        return this.x() + ", " + this.y();
+        return this.y() + ", " + this.x();
     }
 }

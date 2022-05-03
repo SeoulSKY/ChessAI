@@ -24,6 +24,8 @@ public class Game {
 
     protected static final double MOBILITY_WEIGHT = 0.1;
 
+    protected static final double MINIMAX_VALUE_RANGE = 245.5;
+
     /**
      * Check if the given state is bot turn
      * @param state the state
@@ -119,9 +121,9 @@ public class Game {
         }
 
         if (state.getWinner().get().isBot()) {
-            return Double.MAX_VALUE;
+            return MINIMAX_VALUE_RANGE;
         } else {
-            return Double.MIN_VALUE;
+            return -MINIMAX_VALUE_RANGE;
         }
     }
 

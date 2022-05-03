@@ -1,6 +1,10 @@
 package piece;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import game.Player;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import util.Cursor;
 import util.Direction;
 import util.Position;
@@ -13,6 +17,8 @@ import java.util.List;
  * The piece of the chess
  */
 public abstract class Piece {
+
+    private static final Logger logger = LogManager.getLogger();
 
     protected Player player;
 
@@ -27,6 +33,7 @@ public abstract class Piece {
      * Check if this is a bot piece
      * @return true if it is, false otherwise
      */
+    @JsonIgnore
     public boolean isBot() {
         return this.player.isBot();
     }
@@ -43,14 +50,25 @@ public abstract class Piece {
      * Get the position of the piece
      * @return the position
      */
+    @JsonIgnore
     public Position getPosition() {
         return this.position;
+    }
+
+    /**
+     * Get the icon of this piece
+     * @return the icon
+     */
+    @JsonGetter
+    public char getIcon() {
+        return this.isBot() ? this.getBlackIcon() : this.getWhiteIcon();
     }
 
     /**
      * Get the x of the piece
      * @return the x
      */
+    @JsonGetter
     public int getX() {
         return this.getPosition().x();
     }
@@ -59,6 +77,7 @@ public abstract class Piece {
      * Get the y of the piece
      * @return the y
      */
+    @JsonGetter
     public int getY() {
         return this.getPosition().y();
     }
@@ -74,13 +93,15 @@ public abstract class Piece {
      * Get a string that represents this piece for the black player
      * @return the icon
      */
-    public abstract char getBlackIcon();
+    @JsonIgnore
+    protected abstract char getBlackIcon();
 
     /**
      * Get a string that represents this piece for the white player
      * @return the icon
      */
-    public abstract char getWhiteIcon();
+    @JsonIgnore
+    protected abstract char getWhiteIcon();
 
     /**
      * Return all possible movements of the given piece to the given directions
@@ -93,14 +114,11 @@ public abstract class Piece {
         for (Direction direction : directions) {
             Cursor cursor = new Cursor(this.getX(), this.getY(), direction);
 
-            cursor.move();
-            while (cursor.canMove() && !this.player.isOccupied(cursor.getPosition()) && !opponent.isOccupied(cursor.getPosition())) {
-                movements.add(cursor.getPosition());
+            while (cursor.canMove() && !opponent.isOccupied(cursor.getPosition())) {
                 cursor.move();
-            }
-
-            if (opponent.isOccupied(cursor.getPosition())) {
-                movements.add(cursor.getPosition());
+                if (!this.player.isOccupied(cursor.getPosition())) {
+                    movements.add(cursor.getPosition());
+                }
             }
         }
 
@@ -114,16 +132,14 @@ public abstract class Piece {
      */
     public Piece clone(Player player) {
         try {
-            Piece clone = (Piece) super.clone();
-            clone.player = player;
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+            return this.getClass().getDeclaredConstructor(Player.class, Position.class).newInstance(player, this.position);
+        } catch (Exception e) {
+            throw logger.throwing(new RuntimeException(e));
         }
     }
 
     public String toString() {
-        return String.valueOf(this.isBot() ? this.getBlackIcon() : this.getWhiteIcon());
+        return String.format("(%s, %s)", this.getIcon(), this.position);
     }
 
     @Override
@@ -134,6 +150,6 @@ public abstract class Piece {
 
         Piece other = (Piece) obj;
         return this.isBot() == other.isBot() && this.getPosition().equals(other.getPosition()) &&
-                this.getBlackIcon() == other.getBlackIcon() && this.getWhiteIcon() == other.getWhiteIcon();
+                this.getIcon() == other.getIcon();
     }
 }

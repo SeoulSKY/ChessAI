@@ -4,9 +4,7 @@ import org.jetbrains.annotations.Nullable;
 import piece.*;
 import util.Position;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -117,19 +115,17 @@ public class State implements Cloneable {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        String[][] board = new String[BOARD_SIZE][BOARD_SIZE];
+        char[][] board = new char[BOARD_SIZE][BOARD_SIZE];
+        for (char[] row : board) {
+            Arrays.fill(row, '□');
+        }
 
-        Stream.concat(this.botPlayer.allPieces().stream(), this.humanPlayer.allPieces().stream())
-                .toList()
-                .forEach(piece -> board[piece.getY()][piece.getX()] = piece.toString());
+        Stream.of(this.botPlayer.allPieces(), this.humanPlayer.allPieces())
+                .flatMap(Collection::stream)
+                .forEach(piece -> board[piece.getY()][piece.getX()] = piece.getIcon());
 
         for (int i = 0; i < BOARD_SIZE; i++) {
-            for (int j = 0; j < BOARD_SIZE; j++) {
-                if (board[i][j] == null) {
-                    board[i][j] = "□";
-                }
-            }
-            builder.append(String.join("", board[i])).append('\n');
+            builder.append(board[i]).append('\n');
         }
 
         return builder.toString();
@@ -152,8 +148,8 @@ public class State implements Cloneable {
         for (int i = 0; i < lines.length; i++) {
             char[] chars = lines[i].toCharArray();
             for (int j = 0; j < lines[i].length(); j++) {
-                Position position = new Position(i, j);
-                switch (chars[i]) {
+                Position position = new Position(j, i);
+                switch (chars[j]) {
                     case Bishop.BLACK_ICON -> botPieces.add(new Bishop(botPlayer, position));
                     case Bishop.WHITE_ICON -> humanPieces.add(new Bishop(humanPlayer, position));
                     case King.BLACK_ICON -> botPieces.add(new King(botPlayer, position));

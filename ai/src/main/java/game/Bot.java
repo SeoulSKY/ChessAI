@@ -9,15 +9,15 @@ public class Bot {
 
     protected final Game game;
 
-    protected final int intelligence;
+    protected final int intelligenceLevel;
 
     protected Map<State, Double> transpositionTable;
 
     protected int numNodesExpanded;
 
-    public Bot(int intelligence) {
+    public Bot(int intelligenceLevel) {
         this.game = new Game();
-        this.intelligence = intelligence;
+        this.intelligenceLevel = intelligenceLevel;
         this.transpositionTable = new HashMap<>();
         this.numNodesExpanded = 0;
     }
@@ -28,7 +28,7 @@ public class Bot {
      * @return true if it should, false otherwise
      */
     protected boolean shouldCutOff(int depth) {
-        return depth > this.intelligence;
+        return depth > this.intelligenceLevel;
     }
 
     /**
@@ -70,7 +70,7 @@ public class Bot {
         Instant endTime = Instant.now();
         Duration timeTaken = Duration.between(startTime, endTime);
 
-        return new DecisionRecord(timeTaken, minimaxValue, bestAction, nextState.toString(), this.numNodesExpanded);
+        return new DecisionRecord(timeTaken, minimaxValue , bestAction, nextState.toString(), this.numNodesExpanded);
     }
 
     /**

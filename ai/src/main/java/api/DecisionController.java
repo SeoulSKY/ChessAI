@@ -1,13 +1,14 @@
 package api;
 
-import game.*;
-
+import game.Bot;
+import game.DecisionRecord;
+import game.State;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.web.bind.annotation.*;
-
-import piece.Piece;
-import util.Position;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("api/decision")
 @RestController
@@ -15,21 +16,21 @@ public class DecisionController {
 
     private static final Logger logger = LogManager.getLogger();
 
-    @PostMapping
-    public DecisionRecord decision(@RequestBody api.json.Game body) {
-        Game game = new Game();
-        Bot bot = new Bot(body.intelligence());
+    @GetMapping
+    public DecisionRecord decision(@RequestParam int intelligenceLevel, @RequestParam String board) {
+        Bot bot = new Bot(intelligenceLevel);
 
-        State state = State.parse(body.board(), false);
-        Position position = new Position(body.action().x(), body.action().y());
-        Action action = new Action(state.getHumanPlayer().findPiece(position).orElseThrow(), position);
+        State state = State.parse(board, true);
 
+        logger.info("Received state:\n{}", state);
         logger.info("Thinking...");
-        DecisionRecord decisionRecord = bot.decide(game.result(state, action));
-        Piece piece = decisionRecord.actionTaken().piece();
-        logger.info("Moved (" + piece + ", " + piece.getPosition() + ") to " + body.action() +
-                " with Minimax value: " + decisionRecord + " after " + (decisionRecord.timeTaken().toMillis() * 100.0) +
-                " seconds, expanding " + decisionRecord.numNodesExpanded() + " nodes.");
+        DecisionRecord decisionRecord = bot.decide(state);
+
+        logger.info("Moved {} to {} with Minimax value: {} after {} seconds, expanding {} nodes.",
+                decisionRecord.actionTaken().piece().toString(), decisionRecord.actionTaken(), decisionRecord.minimaxValue(),
+                (decisionRecord.timeTaken().toMillis() / 1000.0), decisionRecord.numNodesExpanded());
+
+        logger.info("Result:\n{}", decisionRecord.resultBoard());
 
         return decisionRecord;
     }
