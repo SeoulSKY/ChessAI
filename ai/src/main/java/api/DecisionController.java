@@ -16,6 +16,12 @@ public class DecisionController {
 
     private static final Logger logger = LogManager.getLogger();
 
+    /**
+     * Return the AI's decision from the given board
+     * @param intelligenceLevel the intelligence level of the AI
+     * @param board the board
+     * @return the decision with relevant information
+     */
     @GetMapping
     public DecisionRecord decision(@RequestParam int intelligenceLevel, @RequestParam String board) {
         Bot bot = new Bot(intelligenceLevel);

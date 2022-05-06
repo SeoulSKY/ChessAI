@@ -1,5 +1,7 @@
 package game;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import piece.*;
 import util.Position;
 
@@ -7,6 +9,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Player implements Cloneable {
+
+    private static final Logger logger = LogManager.getLogger();
 
     protected boolean isBot;
 
@@ -299,7 +303,7 @@ public class Player implements Cloneable {
             this.pieces = this.pieces.stream().map(p -> p.clone(newPlayer)).collect(Collectors.toSet());
             return newPlayer;
         } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+            throw logger.throwing(new RuntimeException(e));
         }
     }
 }

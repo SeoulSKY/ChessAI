@@ -132,7 +132,9 @@ public abstract class Piece {
      */
     public Piece clone(Player player) {
         try {
-            return this.getClass().getDeclaredConstructor(Player.class, Position.class).newInstance(player, this.position);
+            return this.getClass()
+                    .getDeclaredConstructor(Player.class, Position.class)
+                    .newInstance(player, this.position);
         } catch (Exception e) {
             throw logger.throwing(new RuntimeException(e));
         }

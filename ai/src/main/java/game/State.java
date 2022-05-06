@@ -1,5 +1,7 @@
 package game;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import piece.*;
 import util.Position;
@@ -11,6 +13,8 @@ import java.util.stream.Stream;
  * The state of the chess game
  */
 public class State implements Cloneable {
+
+    private static final Logger logger = LogManager.getLogger();
 
     protected static final int BOARD_SIZE = 8;
 
@@ -100,6 +104,21 @@ public class State implements Cloneable {
         return this.winner == null ? Optional.empty() : Optional.of(this.winner);
     }
 
+    /**
+     * Find the piece at the given position
+     * @param position the position
+     * @return the piece
+     */
+    public Optional<Piece> findPiece(Position position) {
+        Optional<Piece> piece = this.botPlayer.findPiece(position);
+
+        if (piece.isPresent()) {
+            return piece;
+        }
+
+        return this.humanPlayer.findPiece(position);
+    }
+
     @Override
     public State clone() {
         try {
@@ -108,7 +127,7 @@ public class State implements Cloneable {
             this.humanPlayer = this.humanPlayer.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
+            throw logger.throwing(new RuntimeException(e));
         }
     }
 

@@ -14,9 +14,15 @@ import java.util.Collection;
 @RestController
 public class ActionsController {
 
+    protected static final Game game = new Game();
+
+    /**
+     * Return the possible actions of the human player from the given board
+     * @param board the board
+     * @return the actions
+     */
     @GetMapping
     public Collection<Action> actions(@RequestParam String board) {
-        Game game = new Game();
         State state = State.parse(board, false);
         return game.actions(state);
     }
