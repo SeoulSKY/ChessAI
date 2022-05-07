@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN ./install-composer
+RUN ["chmod", "+x", "./install-composer.sh"]
 
 RUN php composer.phar install
 
