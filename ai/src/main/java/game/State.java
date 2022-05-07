@@ -104,21 +104,6 @@ public class State implements Cloneable {
         return this.winner == null ? Optional.empty() : Optional.of(this.winner);
     }
 
-    /**
-     * Find the piece at the given position
-     * @param position the position
-     * @return the piece
-     */
-    public Optional<Piece> findPiece(Position position) {
-        Optional<Piece> piece = this.botPlayer.findPiece(position);
-
-        if (piece.isPresent()) {
-            return piece;
-        }
-
-        return this.humanPlayer.findPiece(position);
-    }
-
     @Override
     public State clone() {
         try {

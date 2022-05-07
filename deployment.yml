@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chess-ai-deployment
+  labels:
+    app: chess-ai
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chess-ai
+  template:
+    metadata:
+      labels:
+        app: chess-ai
+    spec:
+      containers:
+        - image: swkim7519/ai:latest
+          name: ai
+          ports:
+          - containerPort: 81
+        - image: swkim7519/web:latest
+          name: web
+          ports:
+          - containerPort: 80

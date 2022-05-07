@@ -22,7 +22,7 @@ public class ResultController {
     protected static final Game game = new Game();
 
     /**
-     * Return the result of the action applied to the the board
+     * Return the result of the action applied to the board
      * @param json the json containing the board and the action
      * @return the result board
      * @throws JsonProcessingException when the given request body is not a valid json
@@ -45,7 +45,7 @@ public class ResultController {
         x = mapper.convertValue(actionNode.get("x"), int.class);
         y = mapper.convertValue(actionNode.get("y"), int.class);
 
-        Piece piece = state.findPiece(oldPosition)
+        Piece piece = state.getHumanPlayer().findPiece(oldPosition)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("A piece at %s not found on the given board.", oldPosition)));
 

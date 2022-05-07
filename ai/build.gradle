@@ -2,10 +2,8 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.5.13'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'application'
 }
-
-group 'org.example'
-version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -25,3 +23,6 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+mainClassName = 'api.Main'
+
