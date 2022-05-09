@@ -19,7 +19,7 @@ spec:
           imagePullPolicy: Always
           name: ai
           ports:
-          - containerPort: 81
+          - containerPort: 80
         - image: ghcr.io/seoulsky/chess-ai/web:latest
           imagePullPolicy: Always
           name: web

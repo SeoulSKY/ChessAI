@@ -1,6 +1,6 @@
-FROM php:8.0-cli
+FROM php:8.0-apache
 
-WORKDIR /app
+WORKDIR /var/www/html/
 
 COPY . .
 
@@ -8,6 +8,4 @@ RUN ["chmod", "+x", "./install-composer.sh"]
 
 RUN php composer.phar install
 
-EXPOSE 8080
-
-CMD ["php", "-S", "localhost:8080"]
+EXPOSE 80

@@ -4,4 +4,6 @@ WORKDIR /app
 
 COPY . .
 
+EXPOSE 80
+
 CMD ["./gradlew", "run"]

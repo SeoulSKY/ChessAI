@@ -10,3 +10,5 @@ spec:
   selector:
     app: chess-ai
   type: LoadBalancer
+  externalIPs:
+    - 192.168.0.10
