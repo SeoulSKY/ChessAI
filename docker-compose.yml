@@ -1,15 +1,15 @@
 version: "3.9"
 
 services:
-  ai-server:
-    build: ./ai-server
-    container_name: ai-server
-    expose:
-      - 80
+  # ai-server:
+  #   build: ./ai-server
+  #   container_name: ai-server
+  #   ports:
+  #     - "5000:5000"
   web-server:
     build: ./web-server
     container_name: web-server
-    depends_on:
-      - ai-server
     ports:
       - "8080:80"
+    environment:
+      - AI_SERVER_HOST="http://ai-server:5000/"
