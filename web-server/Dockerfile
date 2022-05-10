@@ -1,10 +1,13 @@
-FROM 18.1.0
+FROM node:18.1.0
 
 WORKDIR /app
 
 COPY . .
 
-ARG PORT=80
+RUN npm install
+
+ENV HOST="0.0.0.0"
+ENV PORT=80
 
 EXPOSE 80
 
