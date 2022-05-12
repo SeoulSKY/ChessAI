@@ -1,0 +1,21 @@
+.tile {
+    display: grid;
+    place-content: center;
+}
+
+.black {
+    background-color: #B6876B
+}
+
+.white {
+    background-color: #F4DFC1
+}
+
+.piece {
+    width: 10vmax;
+    height: 10vmax;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    overflow: hidden;
+}

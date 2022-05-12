@@ -1,0 +1,6 @@
+.board {
+    display: grid;
+    grid-template-rows: repeat(8, 12vmax);
+    grid-template-columns: repeat(8, 12vmax);
+    background-color: aqua;
+}

@@ -11,5 +11,4 @@ services:
     container_name: web-server
     ports:
       - "8080:80"
-    environment:
-      - AI_SERVER_HOST="http://ai-server:5000/"
+

@@ -27,6 +27,14 @@ public class Game {
     protected static final double MINIMAX_VALUE_RANGE = 245.5;
 
     /**
+     * Get the initial state of the game
+     * @return the state
+     */
+    public State getInitialState() {
+        return new State();
+    }
+
+    /**
      * Check if the given state is bot turn
      * @param state the state
      * @return true if it is, false otherwise

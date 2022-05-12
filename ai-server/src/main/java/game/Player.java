@@ -25,7 +25,7 @@ public class Player implements Cloneable {
 
         final int NUM_PAWNS = 8;
         for (int j = 0; j < NUM_PAWNS; j++) {
-            this.pieces.add(new Pawn(this, new Position(pawnRow, j)));
+            this.pieces.add(new Pawn(this, new Position(j, pawnRow)));
         }
 
         int pieceRow = isBot ? 0 : 7;
@@ -40,14 +40,14 @@ public class Player implements Cloneable {
         final int QUEEN_COL = 4;
 
         this.pieces.addAll(List.of(
-                new Bishop(this, new Position(pieceRow, BISHOP1_COL)),
-                new Bishop(this, new Position(pieceRow, BISHOP2_COL)),
-                new Knight(this, new Position(pieceRow, KNIGHT1_COl)),
-                new Knight(this, new Position(pieceRow, KNIGHT2_COL)),
-                new Rook(this, new Position(pieceRow, ROOK1_COL)),
-                new Rook(this, new Position(pieceRow, ROOK2_COL)),
-                new King(this, new Position(pieceRow, KING_COL)),
-                new Queen(this, new Position(pieceRow, QUEEN_COL))
+                new Bishop(this, new Position(BISHOP1_COL, pieceRow)),
+                new Bishop(this, new Position(BISHOP2_COL, pieceRow)),
+                new Knight(this, new Position(KNIGHT1_COl, pieceRow)),
+                new Knight(this, new Position(KNIGHT2_COL, pieceRow)),
+                new Rook(this, new Position(ROOK1_COL, pieceRow)),
+                new Rook(this, new Position(ROOK2_COL, pieceRow)),
+                new King(this, new Position(KING_COL, pieceRow)),
+                new Queen(this, new Position(QUEEN_COL, pieceRow))
         ));
     }
 
