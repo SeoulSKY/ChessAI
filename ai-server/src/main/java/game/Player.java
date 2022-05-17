@@ -144,7 +144,7 @@ public class Player implements Cloneable {
      * Get the queen of the player
      * @return the queen
      */
-    protected Collection<Queen> getQueen() {
+    protected Collection<Queen> getQueens() {
         return this.pieces.stream()
                 .filter(p -> p instanceof Queen)
                 .map(p -> (Queen) p)
@@ -156,7 +156,7 @@ public class Player implements Cloneable {
      * @return the number of queens
      */
     public int countQueens() {
-        return this.getQueen().size();
+        return this.getQueens().size();
     }
 
     /**
