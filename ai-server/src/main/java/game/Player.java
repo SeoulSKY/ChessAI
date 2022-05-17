@@ -21,14 +21,14 @@ public class Player implements Cloneable {
         this.isBot = isBot;
         this.pieces = new HashSet<>();
 
-        int pawnRow = isBot ? 1 : 6;
+        final int PAWN_ROW = isBot ? 1 : 6;
 
         final int NUM_PAWNS = 8;
         for (int j = 0; j < NUM_PAWNS; j++) {
-            this.pieces.add(new Pawn(this, new Position(j, pawnRow)));
+            this.pieces.add(new Pawn(this, new Position(j, PAWN_ROW)));
         }
 
-        int pieceRow = isBot ? 0 : 7;
+        final int PIECE_ROW = isBot ? 0 : 7;
 
         final int BISHOP1_COL = 2;
         final int BISHOP2_COL = 5;
@@ -40,14 +40,14 @@ public class Player implements Cloneable {
         final int QUEEN_COL = 4;
 
         this.pieces.addAll(List.of(
-                new Bishop(this, new Position(BISHOP1_COL, pieceRow)),
-                new Bishop(this, new Position(BISHOP2_COL, pieceRow)),
-                new Knight(this, new Position(KNIGHT1_COl, pieceRow)),
-                new Knight(this, new Position(KNIGHT2_COL, pieceRow)),
-                new Rook(this, new Position(ROOK1_COL, pieceRow)),
-                new Rook(this, new Position(ROOK2_COL, pieceRow)),
-                new King(this, new Position(KING_COL, pieceRow)),
-                new Queen(this, new Position(QUEEN_COL, pieceRow))
+                new Bishop(this, new Position(BISHOP1_COL, PIECE_ROW)),
+                new Bishop(this, new Position(BISHOP2_COL, PIECE_ROW)),
+                new Knight(this, new Position(KNIGHT1_COl, PIECE_ROW)),
+                new Knight(this, new Position(KNIGHT2_COL, PIECE_ROW)),
+                new Rook(this, new Position(ROOK1_COL, PIECE_ROW)),
+                new Rook(this, new Position(ROOK2_COL, PIECE_ROW)),
+                new King(this, new Position(KING_COL, PIECE_ROW)),
+                new Queen(this, new Position(QUEEN_COL, PIECE_ROW))
         ));
     }
 
@@ -68,7 +68,7 @@ public class Player implements Cloneable {
      * Get alive pawns of the player
      * @return the pawns
      */
-    protected List<Pawn> getPawns() {
+    protected Collection<Pawn> getPawns() {
         return this.pieces.stream()
                 .filter(p -> p instanceof Pawn)
                 .map(p -> (Pawn) p)
@@ -87,7 +87,7 @@ public class Player implements Cloneable {
      * Get alive bishops of the player
      * @return the bishops
      */
-    protected List<Bishop> getBishops() {
+    protected Collection<Bishop> getBishops() {
         return this.pieces.stream()
                 .filter(p -> p instanceof Bishop)
                 .map(p -> (Bishop) p)
@@ -106,7 +106,7 @@ public class Player implements Cloneable {
      * Get alive knights of the player
      * @return the knights
      */
-    protected List<Knight> getKnights() {
+    protected Collection<Knight> getKnights() {
         return this.pieces.stream()
                 .filter(p -> p instanceof Knight)
                 .map(p -> (Knight) p)
@@ -125,7 +125,7 @@ public class Player implements Cloneable {
      * Get alive rooks of the player
      * @return the rooks
      */
-    protected List<Rook> getRooks() {
+    protected Collection<Rook> getRooks() {
         return this.pieces.stream()
                 .filter(p -> p instanceof Rook)
                 .map(p -> (Rook) p)
@@ -144,11 +144,11 @@ public class Player implements Cloneable {
      * Get the queen of the player
      * @return the queen
      */
-    protected Optional<Queen> getQueen() {
+    protected Collection<Queen> getQueen() {
         return this.pieces.stream()
                 .filter(p -> p instanceof Queen)
                 .map(p -> (Queen) p)
-                .findAny();
+                .toList();
     }
 
     /**
@@ -156,7 +156,7 @@ public class Player implements Cloneable {
      * @return the number of queens
      */
     public int countQueens() {
-        return this.getQueen().isPresent() ? 1 : 0;
+        return this.getQueen().size();
     }
 
     /**
@@ -218,7 +218,7 @@ public class Player implements Cloneable {
      * @return the number
      */
     public int countIsolatedPawns() {
-        List<Pawn> alivePawns = this.getPawns();
+        Collection<Pawn> alivePawns = this.getPawns();
 
         int count = 0;
         for (Pawn p1 : alivePawns) {
@@ -238,6 +238,38 @@ public class Player implements Cloneable {
         }
 
         return count;
+    }
+
+    /**
+     * Return the pawns of this player that are promotable
+     * @return the pawns
+     */
+    public Collection<Pawn> getPromotablePawns() {
+        final int PROMOTABLE_ROW = this.isBot() ? 7 : 0;
+        return this.getPawns().stream()
+                .filter(pawn -> pawn.getY() == PROMOTABLE_ROW)
+                .toList();
+    }
+
+    /**
+     * Add the piece that the icon indicates to the position
+     * @param icon the icon of the piece. It can be either black or white
+     * @param position the position of the piece
+     */
+    public void addPiece(char icon, Position position) {
+        if (this.isOccupied(position)) {
+            throw new IllegalArgumentException(String.format("The position at (%s) is already occupied", position));
+        }
+
+        switch (icon) {
+            case Bishop.BLACK_ICON, Bishop.WHITE_ICON -> this.pieces.add(new Bishop(this, position));
+            case King.BLACK_ICON, King.WHITE_ICON -> this.pieces.add(new King(this, position));
+            case Knight.BLACK_ICON, Knight.WHITE_ICON -> this.pieces.add(new Knight(this, position));
+            case Pawn.BLACK_ICON, Pawn.WHITE_ICON -> this.pieces.add(new Pawn(this, position));
+            case Queen.BLACK_ICON, Queen.WHITE_ICON -> this.pieces.add(new Queen(this, position));
+            case Rook.BLACK_ICON, Rook.WHITE_ICON -> this.pieces.add(new Rook(this, position));
+            default -> throw new IllegalArgumentException(String.format("The icon %s is invalid", icon));
+        }
     }
 
     /**

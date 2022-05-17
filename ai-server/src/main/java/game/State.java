@@ -142,30 +142,22 @@ public class State implements Cloneable {
      * @return the state
      */
     public static State parse(String board, boolean isBotTurn) {
-        Set<Piece> botPieces = new HashSet<>();
-        Set<Piece> humanPieces = new HashSet<>();
-        Player botPlayer = new Player(true, botPieces);
-        Player humanPlayer = new Player(false, humanPieces);
+        Player botPlayer = new Player(true, new HashSet<>());
+        Player humanPlayer = new Player(false, new HashSet<>());
 
         String[] lines = board.split("\n");
 
         for (int i = 0; i < lines.length; i++) {
             char[] chars = lines[i].toCharArray();
             for (int j = 0; j < lines[i].length(); j++) {
+                char icon = chars[j];
                 Position position = new Position(j, i);
-                switch (chars[j]) {
-                    case Bishop.BLACK_ICON -> botPieces.add(new Bishop(botPlayer, position));
-                    case Bishop.WHITE_ICON -> humanPieces.add(new Bishop(humanPlayer, position));
-                    case King.BLACK_ICON -> botPieces.add(new King(botPlayer, position));
-                    case King.WHITE_ICON -> humanPieces.add(new King(humanPlayer, position));
-                    case Knight.BLACK_ICON -> botPieces.add(new Knight(botPlayer, position));
-                    case Knight.WHITE_ICON -> humanPieces.add(new Knight(humanPlayer, position));
-                    case Pawn.BLACK_ICON -> botPieces.add(new Pawn(botPlayer, position));
-                    case Pawn.WHITE_ICON -> humanPieces.add(new Pawn(humanPlayer, position));
-                    case Queen.BLACK_ICON -> botPieces.add(new Queen(botPlayer, position));
-                    case Queen.WHITE_ICON -> humanPieces.add(new Queen(humanPlayer, position));
-                    case Rook.BLACK_ICON -> botPieces.add(new Rook(botPlayer, position));
-                    case Rook.WHITE_ICON -> humanPieces.add(new Rook(humanPlayer, position));
+
+                switch (icon) {
+                    case Bishop.BLACK_ICON, King.BLACK_ICON, Knight.BLACK_ICON, Pawn.BLACK_ICON, Queen.BLACK_ICON,
+                            Rook.BLACK_ICON -> botPlayer.addPiece(icon, position);
+                    case Bishop.WHITE_ICON, King.WHITE_ICON, Knight.WHITE_ICON, Pawn.WHITE_ICON, Queen.WHITE_ICON,
+                            Rook.WHITE_ICON -> humanPlayer.addPiece(icon, position);
                 }
             }
         }

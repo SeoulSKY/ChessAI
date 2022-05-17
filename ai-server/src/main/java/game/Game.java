@@ -1,9 +1,12 @@
 package game;
 
 import org.jetbrains.annotations.Nullable;
+import piece.Pawn;
 import piece.Piece;
+import piece.Queen;
 
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * The chess game
@@ -95,8 +98,12 @@ public class Game {
 
         Piece myPiece = myPlayer.findPiece(action.piece().getPosition()).orElseThrow();
         myPiece.moveTo(action.newPosition());
-
         opponent.killPiece(myPiece.getPosition());
+
+        for (Pawn promotablePawn : myPlayer.getPromotablePawns()) {
+            myPlayer.killPiece(promotablePawn.getPosition());
+            myPlayer.addPiece(Queen.BLACK_ICON, promotablePawn.getPosition());
+        }
 
         boolean isMyKingAlive = myPlayer.countKings() == 1;
         boolean isOpponentKingAlive = opponent.countKings() == 1;
