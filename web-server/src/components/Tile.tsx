@@ -16,7 +16,7 @@ function allowDrop(event: React.DragEvent) {
 }
 
 function dragPiece(event: React.DragEvent) {
-    let piece = event.target as HTMLDivElement;
+    let piece = event.target as HTMLImageElement;
     event.dataTransfer.setData("text", piece.id);
 }
 
