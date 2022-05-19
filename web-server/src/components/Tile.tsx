@@ -49,7 +49,7 @@ export default function Tile({color, piece, onDrop}: Props) {
         let piece: Piece = {imageUrl: imageUrl, x: Number(x), y: Number(y)};
 
         [x, y] = tile.id.split(" ");
-        onDrop({piece, x: Number(x), y: Number(y)});
+        onDrop({piece: piece, x: Number(x), y: Number(y)});
     }
 
     return (
