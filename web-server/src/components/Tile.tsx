@@ -1,6 +1,6 @@
 import "./Tile.css"
 import React from "react";
-import * as Constants from "../constants";
+import * as Globals from "../globals";
 import {Action} from "../models/Action";
 import {Piece} from "../models/Piece";
 
@@ -28,11 +28,11 @@ function dragPiece(event: React.DragEvent) {
  */
 export function imageUrlAt(x: number, y: number): string | null {
     let tiles = document.getElementsByClassName("tile");
-    let linear_index = x + y * Constants.BOARD_SIZE;
+    let linearIndex = x + y * Globals.BOARD_SIZE;
 
-    let tile = tiles.item(linear_index);
+    let tile = tiles.item(linearIndex);
     if (!tile) {
-        throw new Error(`Invalid tile index: ${linear_index}`);
+        throw new Error(`Invalid tile index: ${linearIndex}`);
     }
 
     let piece = tile.firstElementChild as HTMLImageElement;
@@ -46,7 +46,11 @@ export default function Tile({color, piece, onDrop}: Props) {
         let image = document.getElementById(event.dataTransfer.getData("text")) as HTMLImageElement;
 
         let [imageUrl, x, y] = image.id.split(" ");
-        let piece: Piece = {imageUrl: imageUrl, x: Number(x), y: Number(y)};
+        if (!imageUrl) {
+            throw new Error("Cannot drop an empty piece to a tile.");
+        }
+
+        let piece: Piece = {imageUrl: imageUrl, x: Number(x), y: Number(y), isDraggable: true};
 
         [x, y] = tile.id.split(" ");
         onDrop({piece: piece, x: Number(x), y: Number(y)});
@@ -54,7 +58,9 @@ export default function Tile({color, piece, onDrop}: Props) {
 
     return (
         <div className={"tile " + color} id={`${piece.x} ${piece.y}`} onDragOver={allowDrop} onDrop={dropPiece}>
-            {piece.imageUrl && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"} src={piece.imageUrl} draggable={true} onDragStart={dragPiece} alt={piece.imageUrl}></img>}
+            {piece.imageUrl && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"}
+                                    src={piece.imageUrl} draggable={piece.isDraggable} onDragStart={dragPiece}
+                                    alt={piece.imageUrl}></img>}
         </div>
     )
 }

@@ -1,55 +1,9 @@
 import "./Board.css";
-import * as Constants from "../constants";
-import React, {useState} from "react";
+import * as Globals from "../globals";
+import React, {useEffect, useState} from "react";
 import Tile, {imageUrlAt} from "./Tile";
 import {Piece} from "../models/Piece";
 import {Action} from "../models/Action";
-
-/**
- * Covert the given icon to the image url
- * @param icon the icon
- * @return the url or undefined if the given icon is invalid
- */
-function imageUrlOf(icon: string): string | null {
-    switch (icon) {
-        case "♝": return Constants.PIECE_URL.blackBishop;
-        case "♗": return Constants.PIECE_URL.whiteBishop;
-        case "♚": return Constants.PIECE_URL.blackKing;
-        case "♔": return Constants.PIECE_URL.whiteKing;
-        case "♞": return Constants.PIECE_URL.blackKnight;
-        case "♘": return Constants.PIECE_URL.whiteKnight;
-        case "♟": return Constants.PIECE_URL.blackPawn;
-        case "♙": return Constants.PIECE_URL.whitePawn;
-        case "♛": return Constants.PIECE_URL.blackQueen
-        case "♕": return Constants.PIECE_URL.whiteQueen;
-        case "♜": return Constants.PIECE_URL.blackRook;
-        case "♖": return Constants.PIECE_URL.whiteRook;
-        default: return null;
-    }
-}
-
-/**
- * Covert the given image url to the icon
- * @param imageUrl the image url
- * @return the icon
- */
-function iconOf(imageUrl: string): string {
-    switch (imageUrl) {
-        case Constants.PIECE_URL.blackBishop: return "♝";
-        case Constants.PIECE_URL.whiteBishop: return "♗";
-        case Constants.PIECE_URL.blackKing: return "♚";
-        case Constants.PIECE_URL.whiteKing: return "♔";
-        case Constants.PIECE_URL.blackKnight: return "♞";
-        case Constants.PIECE_URL.whiteKnight: return "♘";
-        case Constants.PIECE_URL.blackPawn: return "♟";
-        case Constants.PIECE_URL.whitePawn: return "♙";
-        case Constants.PIECE_URL.blackQueen: return "♛";
-        case Constants.PIECE_URL.whiteQueen: return "♕";
-        case Constants.PIECE_URL.blackRook: return "♜";
-        case Constants.PIECE_URL.whiteRook: return "♖";
-        default: throw new Error(`Invalid imageUrl: ${imageUrl}`);
-    }
-}
 
 /**
  * Get the pieces of the given board
@@ -60,11 +14,11 @@ function piecesOf(board: string): Piece[][] {
     let lines = board.split("\n");
     let pieces: Piece[][] = []
 
-    for (let i = 0; i < Constants.BOARD_SIZE; i++) {
+    for (let i = 0; i < Globals.BOARD_SIZE; i++) {
         let row: Piece[] = []
-        for (let j = 0; j < Constants.BOARD_SIZE; j++) {
+        for (let j = 0; j < Globals.BOARD_SIZE; j++) {
             let icon = lines[i][j];
-            row.push({imageUrl: imageUrlOf(icon), x: j, y: i});
+            row.push({imageUrl: Globals.imageUrlOf(icon), x: j, y: i, isDraggable: Globals.isWhite(icon)});
         }
         pieces.push(row);
     }
@@ -82,7 +36,7 @@ function boardOf(pieces: Piece[][]): string {
     for (let row of pieces) {
         let line: string[] = []
         for (let piece of row) {
-            let icon = piece.imageUrl !== null ? iconOf(piece.imageUrl) : "□";
+            let icon = piece.imageUrl !== null ? Globals.iconOf(piece.imageUrl) : Globals.PIECE_ICON.none;
             line.push(icon)
         }
         lines.push(line.join("") + "\n");
@@ -91,15 +45,17 @@ function boardOf(pieces: Piece[][]): string {
 }
 
 /**
- * Read the pieces on the current chess board
+ * Get the pieces on the current chess board
  * @return the current pieces
  */
-function readPieces(): Piece[][] {
+function getPieces(): Piece[][] {
     let pieces: Piece[][] = []
-    for (let i = 0; i < Constants.BOARD_SIZE; i++) {
+    for (let i = 0; i < Globals.BOARD_SIZE; i++) {
         let row: Piece[] = []
-        for (let j = 0; j < Constants.BOARD_SIZE; j++) {
-            row.push({imageUrl: imageUrlAt(j, i), x: j, y: i});
+        for (let j = 0; j < Globals.BOARD_SIZE; j++) {
+            let imageUrl = imageUrlAt(j, i);
+            let icon = imageUrl !== null ? Globals.iconOf(imageUrl) : Globals.PIECE_ICON.none;
+            row.push({imageUrl: imageUrl, x: j, y: i, isDraggable: Globals.isWhite(icon)});
         }
         pieces.push(row);
     }
@@ -111,7 +67,7 @@ function readPieces(): Piece[][] {
  * @return the initial pieces
  */
 async function getInitialPieces(): Promise<Piece[][]> {
-    let response = await fetch(`${Constants.AI_SERVER_HOST}api/initial-board`);
+    let response = await fetch(`${Globals.AI_SERVER_HOST}api/initial-board`);
     if (!response.ok) {
         throw new Error(response.statusText);
     }
@@ -124,29 +80,63 @@ export default function Board() {
 
     let [tiles, setTiles] = useState<JSX.Element[]>([]);
 
-    function getResultPieces(action: Action) {
-        let board = boardOf(readPieces());
-        console.log(board);
-        console.log(action);
+    /**
+     * Apply the given action to the current board
+     * @param action the action
+     */
+    async function apply(action: Action) {
+        if (!action.piece.imageUrl) {
+            throw new Error("Cannot move an empty piece.");
+        }
+
+        let data = {
+            "board": boardOf(getPieces()),
+            "action": {
+                "piece": {
+                    "icon": Globals.iconOf(action.piece.imageUrl),
+                    "x": action.piece.x,
+                    "y": action.piece.y,
+                },
+                "x": action.x,
+                "y": action.y
+            }
+        }
+
+        let response = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "body": JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw Error(response.statusText);
+        }
+
+        let board = await response.text();
+        setBoard(piecesOf(board));
     }
 
     /**
-     * Draw the board from the given pieces
+     * Set the board from the given pieces
      * @param pieces the pieces
      */
-    function drawBoard(pieces: Piece[][]) {
+    function setBoard(pieces: Piece[][]) {
         let arr: JSX.Element[] = [];
-        for (let i = 0; i < Constants.BOARD_SIZE; i++) {
-            for (let j = 0; j < Constants.BOARD_SIZE; j++) {
+        for (let i = 0; i < Globals.BOARD_SIZE; i++) {
+            for (let j = 0; j < Globals.BOARD_SIZE; j++) {
                 let isEven = (i+j) % 2 === 0;
                 let tileColor = isEven ? "white" : "black";
-                arr.push(<Tile key={`${j} ${i}`} color={tileColor} piece={pieces[i][j]} onDrop={getResultPieces}/>);
+                arr.push(<Tile key={`${j} ${i}`} color={tileColor} piece={pieces[i][j]} onDrop={apply}/>);
             }
         }
         setTiles(arr);
     }
 
-    getInitialPieces().then(drawBoard)
+    useEffect(() => {
+        getInitialPieces().then(setBoard);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div className="board" id={"board"}>

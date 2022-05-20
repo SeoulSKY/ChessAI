@@ -7,16 +7,14 @@ import game.Action;
 import game.Game;
 import game.State;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import piece.Piece;
 import util.Position;
 
 @RequestMapping("api/result")
 @RestController
+@CrossOrigin
 public class ResultController {
 
     protected static final Game game = new Game();
