@@ -1,9 +1,8 @@
 import "./Tile.css"
 import React from "react";
 import * as Globals from "../globals";
-import {Action} from "../models/Action";
-import {Piece} from "../models/Piece";
-
+import Action from "../models/Action";
+import Piece from "../models/Piece";
 
 interface Props {
     color: string;
@@ -31,7 +30,7 @@ export function imageUrlAt(x: number, y: number): string | null {
     let linearIndex = x + y * Globals.BOARD_SIZE;
 
     let tile = tiles.item(linearIndex);
-    if (!tile) {
+    if (tile === null) {
         throw new Error(`Invalid tile index: ${linearIndex}`);
     }
 
@@ -42,25 +41,35 @@ export function imageUrlAt(x: number, y: number): string | null {
 export default function Tile({color, piece, onDrop}: Props) {
 
     function dropPiece(event: React.DragEvent) {
-        let tile = event.target as HTMLDivElement;
-        let image = document.getElementById(event.dataTransfer.getData("text")) as HTMLImageElement;
+        event.preventDefault();
 
-        let [imageUrl, x, y] = image.id.split(" ");
-        if (!imageUrl) {
-            throw new Error("Cannot drop an empty piece to a tile.");
+        let droppedImage = document.getElementById(event.dataTransfer.getData("text")) as HTMLImageElement;
+
+        let [imageUrl, x, y] = droppedImage.id.split(" ");
+        if (imageUrl === null) {
+            throw new Error("Cannot drop an empty piece to the board.");
         }
 
-        let piece: Piece = {imageUrl: imageUrl, x: Number(x), y: Number(y), isDraggable: true};
+        let piece: Piece = {imageUrl: imageUrl, x: Number(x), y: Number(y)};
 
-        [x, y] = tile.id.split(" ");
+        let target = event.target as HTMLElement
+        if (target.classList.contains("tile")) {
+            [x, y] = target.id.split(" ");
+        } else if (target.tagName === "IMG") {
+            [, x, y] = target.id.split(" ");
+        } else {
+            throw Error("Piece is dropped on a wrong place.")
+        }
+
         onDrop({piece: piece, x: Number(x), y: Number(y)});
     }
 
     return (
         <div className={"tile " + color} id={`${piece.x} ${piece.y}`} onDragOver={allowDrop} onDrop={dropPiece}>
-            {piece.imageUrl && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"}
-                                    src={piece.imageUrl} draggable={piece.isDraggable} onDragStart={dragPiece}
-                                    alt={piece.imageUrl}></img>}
+            {piece.imageUrl !== null && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"}
+                                    src={piece.imageUrl} draggable={Globals.isWhite(Globals.iconOf(piece.imageUrl))}
+                                             onDragStart={dragPiece}
+                                             alt={piece.imageUrl}></img>}
         </div>
     )
 }

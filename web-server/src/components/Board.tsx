@@ -2,8 +2,8 @@ import "./Board.css";
 import * as Globals from "../globals";
 import React, {useEffect, useState} from "react";
 import Tile, {imageUrlAt} from "./Tile";
-import {Piece} from "../models/Piece";
-import {Action} from "../models/Action";
+import Piece from "../models/Piece";
+import Action from "../models/Action";
 
 /**
  * Get the pieces of the given board
@@ -18,7 +18,7 @@ function piecesOf(board: string): Piece[][] {
         let row: Piece[] = []
         for (let j = 0; j < Globals.BOARD_SIZE; j++) {
             let icon = lines[i][j];
-            row.push({imageUrl: Globals.imageUrlOf(icon), x: j, y: i, isDraggable: Globals.isWhite(icon)});
+            row.push({imageUrl: Globals.imageUrlOf(icon), x: j, y: i});
         }
         pieces.push(row);
     }
@@ -54,8 +54,7 @@ function getPieces(): Piece[][] {
         let row: Piece[] = []
         for (let j = 0; j < Globals.BOARD_SIZE; j++) {
             let imageUrl = imageUrlAt(j, i);
-            let icon = imageUrl !== null ? Globals.iconOf(imageUrl) : Globals.PIECE_ICON.none;
-            row.push({imageUrl: imageUrl, x: j, y: i, isDraggable: Globals.isWhite(icon)});
+            row.push({imageUrl: imageUrl, x: j, y: i});
         }
         pieces.push(row);
     }
@@ -73,6 +72,8 @@ async function getInitialPieces(): Promise<Piece[][]> {
     }
 
     let board = await response.text();
+    console.log(`Response from ${response.url}`);
+    console.log(board);
     return piecesOf(board);
 }
 
@@ -85,7 +86,7 @@ export default function Board() {
      * @param action the action
      */
     async function apply(action: Action) {
-        if (!action.piece.imageUrl) {
+        if (action.piece.imageUrl == null) {
             throw new Error("Cannot move an empty piece.");
         }
 
@@ -115,6 +116,8 @@ export default function Board() {
         }
 
         let board = await response.text();
+        console.log(`Response from ${response.url}: `)
+        console.log(board)
         setBoard(piecesOf(board));
     }
 
@@ -135,6 +138,7 @@ export default function Board() {
     }
 
     useEffect(() => {
+        console.log("Getting the initial board...")
         getInitialPieces().then(setBoard);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

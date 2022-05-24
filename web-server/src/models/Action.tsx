@@ -1,6 +1,6 @@
-import {Piece} from "./Piece";
+import Piece from "./Piece";
 
-export interface Action {
+export default interface Action {
     piece: Piece;
     x: number;
     y: number;
