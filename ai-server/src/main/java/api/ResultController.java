@@ -43,12 +43,14 @@ public class ResultController {
         x = mapper.convertValue(actionNode.get("x"), int.class);
         y = mapper.convertValue(actionNode.get("y"), int.class);
 
-        Piece piece = state.getHumanPlayer().findPiece(oldPosition)
+        Character promotingIcon = mapper.convertValue(actionNode.get("promotingIcon"), Character.class);
+
+        Piece piece = state.getHumanPlayer().findPieceAt(oldPosition)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         String.format("A piece at %s not found on the given board.", oldPosition)));
 
         Action action = new Action(piece, new Position(x, y));
 
-        return game.result(state, action).toString();
+        return game.result(state, action, promotingIcon).toString();
     }
 }

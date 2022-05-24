@@ -3,10 +3,8 @@ package game;
 import org.jetbrains.annotations.Nullable;
 import piece.Pawn;
 import piece.Piece;
-import piece.Queen;
 
 import java.util.Collection;
-import java.util.stream.Stream;
 
 /**
  * The chess game
@@ -77,9 +75,10 @@ public class Game {
      * Return the result of the action applied
      * @param state the current state
      * @param action the action
+     * @param promotionIcon the icon of the piece as a replacement of a pawn. If null is given, no promotion will be applied.
      * @return the new state
      */
-    public State result(State state, @Nullable Action action) {
+    public State result(State state, @Nullable Action action, @Nullable Character promotionIcon) {
         State newState = state.clone();
 
         if (action == null) {
@@ -96,13 +95,15 @@ public class Game {
             opponent = newState.getBotPlayer();
         }
 
-        Piece myPiece = myPlayer.findPiece(action.piece().getPosition()).orElseThrow();
+        Piece myPiece = myPlayer.findPieceAt(action.piece().getPosition()).orElseThrow();
         myPiece.moveTo(action.newPosition());
-        opponent.killPiece(myPiece.getPosition());
+        opponent.killPieceAt(myPiece.getPosition());
 
-        for (Pawn promotablePawn : myPlayer.getPromotablePawns()) {
-            myPlayer.killPiece(promotablePawn.getPosition());
-            myPlayer.addPiece(Queen.BLACK_ICON, promotablePawn.getPosition());
+        if (promotionIcon != null) {
+            for (Pawn promotablePawn : myPlayer.getPromotablePawns()) {
+                myPlayer.killPieceAt(promotablePawn.getPosition());
+                myPlayer.addPiece(promotionIcon, promotablePawn.getPosition());
+            }
         }
 
         boolean isMyKingAlive = myPlayer.countKings() == 1;
@@ -119,6 +120,16 @@ public class Game {
         newState.moveToNextPlayerTurn();
 
         return newState;
+    }
+
+    /**
+     * Return the result of the action applied
+     * @param state the current state
+     * @param action the action
+     * @return the new state
+     */
+    public State result(State state, @Nullable Action action) {
+        return this.result(state, action, null);
     }
 
     /**

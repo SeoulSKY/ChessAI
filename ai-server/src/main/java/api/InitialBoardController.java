@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class InitialBoardController {
 
+    protected static final Game game = new Game();
+
     @GetMapping
     public String initialBoard() {
-        return new Game().getInitialState().toString();
+        return game.getInitialState().toString();
     }
 }

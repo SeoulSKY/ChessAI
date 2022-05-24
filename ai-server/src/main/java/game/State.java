@@ -6,7 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import piece.*;
 import util.Position;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**

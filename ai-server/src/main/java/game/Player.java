@@ -283,8 +283,8 @@ public class Player implements Cloneable {
      * Kill the piece at the given position if present
      * @param position the position
      */
-    public void killPiece(Position position) {
-        this.findPiece(position).ifPresent(this.pieces::remove);
+    public void killPieceAt(Position position) {
+        this.findPieceAt(position).ifPresent(this.pieces::remove);
     }
 
     /**
@@ -292,7 +292,7 @@ public class Player implements Cloneable {
      * @param position the position
      * @return the piece
      */
-    public Optional<Piece> findPiece(Position position) {
+    public Optional<Piece> findPieceAt(Position position) {
         return this.pieces.stream()
                 .filter(piece -> piece.getPosition().equals(position))
                 .findAny();
@@ -309,7 +309,7 @@ public class Player implements Cloneable {
      * Check if the given position is occupied by any piece of the player
      */
     public boolean isOccupied(Position position) {
-        return this.findPiece(position).isPresent();
+        return this.findPieceAt(position).isPresent();
     }
 
     /**
