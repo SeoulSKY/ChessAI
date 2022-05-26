@@ -38,9 +38,9 @@ export const PIECE_ICON = {
 /**
  * Covert the given icon to the image url
  * @param icon the icon
- * @return the url or undefined if the given icon is invalid
+ * @return the url
  */
-export function imageUrlOf(icon: string): string | null {
+export function imageUrlOf(icon: string): string {
     switch (icon) {
         case PIECE_ICON.blackBishop: return PIECE_URL.blackBishop;
         case PIECE_ICON.whiteBishop: return PIECE_URL.whiteBishop;
@@ -54,7 +54,7 @@ export function imageUrlOf(icon: string): string | null {
         case PIECE_ICON.whiteQueen: return PIECE_URL.whiteQueen;
         case PIECE_ICON.blackRook: return PIECE_URL.blackRook;
         case PIECE_ICON.whiteRook: return PIECE_URL.whiteRook;
-        default: return null;
+        default: throw new Error(`Invalid icon: ${icon}`);
     }
 }
 

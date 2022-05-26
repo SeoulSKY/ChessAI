@@ -5,8 +5,10 @@ import Action from "../models/Action";
 import Piece from "../models/Piece";
 
 interface Props {
+    x: number;
+    y: number;
     color: string;
-    piece: Piece;
+    piece: Piece | null;
     onDrop: (action: Action) => void;
 }
 
@@ -34,42 +36,69 @@ export function imageUrlAt(x: number, y: number): string | null {
         throw new Error(`Invalid tile index: ${linearIndex}`);
     }
 
-    let piece = tile.firstElementChild as HTMLImageElement;
-    return piece !== null ? new URL(piece.src).pathname.substring(1) : null;
+    let image = tile.firstElementChild as HTMLImageElement;
+    return image !== null ? new URL(image.src).pathname.substring(1) : null;
 }
 
-export default function Tile({color, piece, onDrop}: Props) {
+export default function Tile({x, y, color, piece, onDrop}: Props) {
 
     function dropPiece(event: React.DragEvent) {
         event.preventDefault();
 
         let droppedImage = document.getElementById(event.dataTransfer.getData("text")) as HTMLImageElement;
 
-        let [imageUrl, x, y] = droppedImage.id.split(" ");
+        let [imageUrl, stringX, stringY] = droppedImage.id.split(" ");
         if (imageUrl === null) {
             throw new Error("Cannot drop an empty piece to the board.");
         }
 
-        let piece: Piece = {imageUrl: imageUrl, x: Number(x), y: Number(y)};
+        if (droppedImage.dataset.actions === undefined) {
+            throw Error("Actions undefined from the dropped image element");
+        }
+
+        console.log("Possible actions: ");
+        console.log(droppedImage.dataset.actions);
+
+        x = Number(stringX);
+        y = Number(stringY);
+
+        let actions: Action[] = JSON.parse(droppedImage.dataset.actions);
+        let piece: Piece = {imageUrl: imageUrl, x: x, y: y, actions: actions};
 
         let target = event.target as HTMLElement
         if (target.classList.contains("tile")) {
-            [x, y] = target.id.split(" ");
+            [x, y] = target.id.split(" ").map(Number);
         } else if (target.tagName === "IMG") {
-            [, x, y] = target.id.split(" ");
+            [, x, y] = target.id.split(" ").map(Number);
         } else {
-            throw Error("Piece is dropped on a wrong place.")
+            console.log("Piece is dropped on a wrong place.");
+            return;
         }
 
-        onDrop({piece: piece, x: Number(x), y: Number(y)});
+        if (actions.find(action => action.x === x && action.y === y) === undefined) {
+            console.log("The action is invalid.");
+            return;
+        }
+
+        let action: Action = {
+            piece: {
+                icon: Globals.iconOf(piece.imageUrl),
+                x: piece.x,
+                y: piece.y
+            },
+            x: x,
+            y: y
+        }
+
+        onDrop(action);
     }
 
     return (
-        <div className={"tile " + color} id={`${piece.x} ${piece.y}`} onDragOver={allowDrop} onDrop={dropPiece}>
-            {piece.imageUrl !== null && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"}
+        <div className={"tile " + color} id={`${x} ${y}`} onDragOver={allowDrop} onDrop={dropPiece}>
+            {piece !== null && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"}
                                     src={piece.imageUrl} draggable={Globals.isWhite(Globals.iconOf(piece.imageUrl))}
-                                             onDragStart={dragPiece}
-                                             alt={piece.imageUrl}></img>}
+                                             onDragStart={dragPiece} alt={piece.imageUrl}
+                                             data-actions={JSON.stringify(piece.actions)}></img>}
         </div>
     )
 }

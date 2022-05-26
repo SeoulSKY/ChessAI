@@ -10,18 +10,33 @@ import Action from "../models/Action";
  * @param board the board
  * @return the pieces
  */
-function piecesOf(board: string): Piece[][] {
+async function piecesOf(board: string): Promise<Piece[][]> {
+    let response = await fetch(encodeURI(`${Globals.AI_SERVER_HOST}/api/actions?board=${board}`));
+    if (!response.ok) {
+        throw Error(response.statusText);
+    }
+
+    let pieces: Piece[][] = [...Array(Globals.BOARD_SIZE)].map(() => Array(Globals.BOARD_SIZE).fill(null));
     let lines = board.split("\n");
-    let pieces: Piece[][] = []
 
     for (let i = 0; i < Globals.BOARD_SIZE; i++) {
-        let row: Piece[] = []
         for (let j = 0; j < Globals.BOARD_SIZE; j++) {
             let icon = lines[i][j];
-            row.push({imageUrl: Globals.imageUrlOf(icon), x: j, y: i});
+            if (icon !== Globals.PIECE_ICON.none) {
+                pieces[i][j] = {imageUrl: Globals.imageUrlOf(icon), x: j, y: i, actions: []}
+            }
         }
-        pieces.push(row);
     }
+
+    let actions: Action[] = await response.json();
+    console.log(`Response from ${response.url}: `);
+    console.log(actions);
+
+    for (let action of actions) {
+        let piece: Piece = pieces[action.piece.y][action.piece.x];
+        piece.actions.push(action);
+    }
+
     return pieces;
 }
 
@@ -36,11 +51,12 @@ function boardOf(pieces: Piece[][]): string {
     for (let row of pieces) {
         let line: string[] = []
         for (let piece of row) {
-            let icon = piece.imageUrl !== null ? Globals.iconOf(piece.imageUrl) : Globals.PIECE_ICON.none;
+            let icon = piece !== null ? Globals.iconOf(piece.imageUrl) : Globals.PIECE_ICON.none;
             line.push(icon)
         }
         lines.push(line.join("") + "\n");
     }
+
     return lines.join("");
 }
 
@@ -49,14 +65,14 @@ function boardOf(pieces: Piece[][]): string {
  * @return the current pieces
  */
 function getPieces(): Piece[][] {
-    let pieces: Piece[][] = []
+    let pieces: Piece[][] = [...Array(Globals.BOARD_SIZE)].map(() => Array(Globals.BOARD_SIZE).fill(null));
     for (let i = 0; i < Globals.BOARD_SIZE; i++) {
-        let row: Piece[] = []
         for (let j = 0; j < Globals.BOARD_SIZE; j++) {
             let imageUrl = imageUrlAt(j, i);
-            row.push({imageUrl: imageUrl, x: j, y: i});
+            if (imageUrl !== null) {
+                pieces[i][j] = {imageUrl: imageUrl, x: j, y: i, actions: []};
+            }
         }
-        pieces.push(row);
     }
     return pieces;
 }
@@ -86,21 +102,9 @@ export default function Board() {
      * @param action the action
      */
     async function apply(action: Action) {
-        if (action.piece.imageUrl == null) {
-            throw new Error("Cannot move an empty piece.");
-        }
-
         let data = {
             "board": boardOf(getPieces()),
-            "action": {
-                "piece": {
-                    "icon": Globals.iconOf(action.piece.imageUrl),
-                    "x": action.piece.x,
-                    "y": action.piece.y,
-                },
-                "x": action.x,
-                "y": action.y
-            }
+            "action": action
         }
 
         let response = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
@@ -118,7 +122,7 @@ export default function Board() {
         let board = await response.text();
         console.log(`Response from ${response.url}: `)
         console.log(board)
-        setBoard(piecesOf(board));
+        piecesOf(board).then(setBoard);
     }
 
     /**
@@ -131,7 +135,7 @@ export default function Board() {
             for (let j = 0; j < Globals.BOARD_SIZE; j++) {
                 let isEven = (i+j) % 2 === 0;
                 let tileColor = isEven ? "white" : "black";
-                arr.push(<Tile key={`${j} ${i}`} color={tileColor} piece={pieces[i][j]} onDrop={apply}/>);
+                arr.push(<Tile key={`${i} ${j}`} x={j} y={i} color={tileColor} piece={pieces[i][j]} onDrop={apply}/>);
             }
         }
         setTiles(arr);

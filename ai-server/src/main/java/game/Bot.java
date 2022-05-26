@@ -1,5 +1,7 @@
 package game;
 
+import piece.Queen;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.HashMap;
@@ -51,7 +53,7 @@ public class Bot {
         double humanBest = Double.POSITIVE_INFINITY;
 
         for (Action action : this.game.actions(state)) {
-            State result = this.game.result(state, action);
+            State result = this.game.result(state, action, Queen.BLACK_ICON);
             double value = this.minValue(result, botBest, humanBest, 1);
 
             if (value > minimaxValue) {

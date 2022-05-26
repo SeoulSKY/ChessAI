@@ -1,5 +1,8 @@
+import Action from "./Action";
+
 export default interface Piece {
-    imageUrl: string | null;
+    imageUrl: string;
     x: number;
     y: number;
+    actions: Action[];
 }
