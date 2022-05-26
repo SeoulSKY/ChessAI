@@ -1,7 +1,7 @@
 import "./Board.css";
 import * as Globals from "../globals";
 import React, {useEffect, useState} from "react";
-import Tile, {imageUrlAt} from "./Tile";
+import Tile, {pieceAt} from "./Tile";
 import Piece from "../models/Piece";
 import Action from "../models/Action";
 
@@ -68,9 +68,9 @@ function getPieces(): Piece[][] {
     let pieces: Piece[][] = [...Array(Globals.BOARD_SIZE)].map(() => Array(Globals.BOARD_SIZE).fill(null));
     for (let i = 0; i < Globals.BOARD_SIZE; i++) {
         for (let j = 0; j < Globals.BOARD_SIZE; j++) {
-            let imageUrl = imageUrlAt(j, i);
-            if (imageUrl !== null) {
-                pieces[i][j] = {imageUrl: imageUrl, x: j, y: i, actions: []};
+            let piece = pieceAt(j, i);
+            if (piece !== null) {
+                pieces[i][j] = piece;
             }
         }
     }

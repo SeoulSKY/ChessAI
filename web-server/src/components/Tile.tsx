@@ -22,12 +22,12 @@ function dragPiece(event: React.DragEvent) {
 }
 
 /**
- * Return the image url at the given coordinate of the board
+ * Return the piece at the given coordinate of the board
  * @param x the x coordinate
  * @param y the y coordinate
- * @return the image url
+ * @return the piece, or null if the piece at the given position is not present
  */
-export function imageUrlAt(x: number, y: number): string | null {
+export function pieceAt(x: number, y: number): Piece | null {
     let tiles = document.getElementsByClassName("tile");
     let linearIndex = x + y * Globals.BOARD_SIZE;
 
@@ -37,7 +37,12 @@ export function imageUrlAt(x: number, y: number): string | null {
     }
 
     let image = tile.firstElementChild as HTMLImageElement;
-    return image !== null ? new URL(image.src).pathname.substring(1) : null;
+    return image === null ? null : {
+        imageUrl: new URL(image.src).pathname.substring(1),
+        x: x,
+        y: y,
+        actions: JSON.parse(image.dataset.actions!)
+    };
 }
 
 export default function Tile({x, y, color, piece, onDrop}: Props) {
@@ -52,17 +57,13 @@ export default function Tile({x, y, color, piece, onDrop}: Props) {
             throw new Error("Cannot drop an empty piece to the board.");
         }
 
-        if (droppedImage.dataset.actions === undefined) {
-            throw Error("Actions undefined from the dropped image element");
-        }
-
         console.log("Possible actions: ");
-        console.log(droppedImage.dataset.actions);
+        console.log(droppedImage.dataset.actions!);
 
         x = Number(stringX);
         y = Number(stringY);
 
-        let actions: Action[] = JSON.parse(droppedImage.dataset.actions);
+        let actions: Action[] = JSON.parse(droppedImage.dataset.actions!);
         let piece: Piece = {imageUrl: imageUrl, x: x, y: y, actions: actions};
 
         let target = event.target as HTMLElement
@@ -96,7 +97,7 @@ export default function Tile({x, y, color, piece, onDrop}: Props) {
     return (
         <div className={"tile " + color} id={`${x} ${y}`} onDragOver={allowDrop} onDrop={dropPiece}>
             {piece !== null && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"}
-                                    src={piece.imageUrl} draggable={Globals.isWhite(Globals.iconOf(piece.imageUrl))}
+                                    src={piece.imageUrl} draggable={Globals.isWhite(piece)}
                                              onDragStart={dragPiece} alt={piece.imageUrl}
                                              data-actions={JSON.stringify(piece.actions)}></img>}
         </div>

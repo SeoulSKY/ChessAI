@@ -1,4 +1,5 @@
 import env from "react-dotenv";
+import Piece from "./models/Piece";
 
 export const AI_SERVER_HOST = env.AI_SERVER_HOST;
 
@@ -82,31 +83,17 @@ export function iconOf(imageUrl: string): string {
 }
 
 /**
- * Check if the given icon is for white player's piece
- * @param icon the icon
+ * Check if the given piece is for white player
+ * @param piece the piece
  * @return true if it is, false otherwise
  */
-export function isWhite(icon: string): boolean {
+export function isWhite(piece: Piece): boolean {
+    let icon = iconOf(piece.imageUrl);
     return [PIECE_ICON.whiteBishop,
         PIECE_ICON.whiteKing,
         PIECE_ICON.whiteKnight,
         PIECE_ICON.whitePawn,
         PIECE_ICON.whiteQueen,
         PIECE_ICON.whiteRook]
-        .includes(icon);
-}
-
-/**
- * Check if the given icon is for black player's piece
- * @param icon the icon
- * @return true if it is, false otherwise
- */
-export function isBlack(icon: string): boolean {
-    return [PIECE_ICON.blackBishop,
-        PIECE_ICON.blackKing,
-        PIECE_ICON.blackKnight,
-        PIECE_ICON.blackPawn,
-        PIECE_ICON.blackQueen,
-        PIECE_ICON.blackRook]
         .includes(icon);
 }
