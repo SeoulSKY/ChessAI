@@ -53,9 +53,6 @@ export default function Tile({x, y, color, piece, onDrop}: Props) {
         let droppedImage = document.getElementById(event.dataTransfer.getData("text")) as HTMLImageElement;
 
         let [imageUrl, stringX, stringY] = droppedImage.id.split(" ");
-        if (imageUrl === null) {
-            throw new Error("Cannot drop an empty piece to the board.");
-        }
 
         console.log("Possible actions: ");
         console.log(droppedImage.dataset.actions!);
