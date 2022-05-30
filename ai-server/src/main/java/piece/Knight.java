@@ -37,6 +37,7 @@ public class Knight extends Piece {
         
         return movements.stream()
                 .filter(Position::isWithinBound)
+                .filter(position -> !this.player.isOccupied(position))
                 .toList();
     }
 

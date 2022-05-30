@@ -116,7 +116,9 @@ public abstract class Piece {
 
             while (cursor.canMove() && !opponent.isOccupied(cursor.getPosition())) {
                 cursor.move();
-                if (!this.player.isOccupied(cursor.getPosition())) {
+                if (this.player.isOccupied(cursor.getPosition())) {
+                    break;
+                } else {
                     movements.add(cursor.getPosition());
                 }
             }

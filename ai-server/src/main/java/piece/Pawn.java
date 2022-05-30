@@ -47,24 +47,28 @@ public class Pawn extends Piece {
 
         List<Position> movements = new LinkedList<>();
 
-        if (x == 1) {
-            movements.add(new Position(x, y + 2));
+        Position moveOneForward = new Position(x, y + 1);
+        if (!this.player.isOccupied(moveOneForward) && !opponent.isOccupied(moveOneForward)) {
+            movements.add(moveOneForward);
         }
 
-        List<Position> positions = List.of(
-                new Position(x, y + 1),
+        final int INITIAL_ROW = 1;
+        Position moveTwoForward = new Position(x, y + 2);
+        if (!this.player.isOccupied(moveTwoForward) && !opponent.isOccupied(moveTwoForward) && y == INITIAL_ROW) {
+            movements.add(moveTwoForward);
+        }
+
+        List<Position> attacks = List.of(
                 new Position(x - 1, y + 1),
                 new Position(x + 1, y + 1));
 
-        for (Position position : positions) {
+        for (Position position : attacks) {
             if (Position.isWithinBound(position) && opponent.isOccupied(position)) {
                 movements.add(position);
             }
         }
 
-        return movements.stream()
-                .filter(p -> !this.player.isOccupied(p))
-                .toList();
+        return movements;
     }
 
     /**
@@ -78,23 +82,27 @@ public class Pawn extends Piece {
 
         List<Position> movements = new LinkedList<>();
 
-        if (x == 6) {
-            movements.add(new Position(x, y - 2));
+        Position moveOneForward = new Position(x, y - 1);
+        if (!this.player.isOccupied(moveOneForward) && !opponent.isOccupied(moveOneForward)) {
+            movements.add(moveOneForward);
         }
 
-        List<Position> positions = List.of(
-                new Position(x, y - 1),
+        final int INITIAL_ROW = 6;
+        Position moveTwoForward = new Position(x, y - 2);
+        if (!this.player.isOccupied(moveTwoForward) && !opponent.isOccupied(moveTwoForward) && y == INITIAL_ROW) {
+            movements.add(moveTwoForward);
+        }
+
+        List<Position> attacks = List.of(
                 new Position(x - 1, y - 1),
                 new Position(x + 1, y - 1));
 
-        for (Position position : positions) {
+        for (Position position : attacks) {
             if (Position.isWithinBound(position) && opponent.isOccupied(position)) {
                 movements.add(position);
             }
         }
 
-        return movements.stream()
-                .filter(p -> !this.player.isOccupied(p))
-                .toList();
+        return movements;
     }
 }
