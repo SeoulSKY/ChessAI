@@ -9,7 +9,7 @@ interface Props {
     y: number;
     color: string;
     piece: Piece | null;
-    onDrop: (action: Action) => void;
+    onDrop: (action: Action) => Promise<void>;
 }
 
 function allowDrop(event: React.DragEvent) {
@@ -110,7 +110,11 @@ export default function Tile({x, y, color, piece, onDrop}: Props) {
             y: newY
         }
 
-        onDrop(action);
+        let whitePieceElements = Array.from(document.getElementsByClassName("piece draggable"));
+        whitePieceElements.forEach(piece => piece.classList.remove("draggable"));
+
+        onDrop(action)
+            .then(() => whitePieceElements.forEach(piece => piece.classList.add("draggable")));
     }
 
     return (
