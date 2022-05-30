@@ -19,3 +19,17 @@
     background-size: 100%;
     overflow: hidden;
 }
+
+.action-hint {
+    width: 10vmax;
+    height: 10vmax;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    overflow: hidden;
+    background-color: #88d498;
+}
+
+.attack-hint {
+    background-color: #e03c3c;
+}

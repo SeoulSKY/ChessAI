@@ -88,12 +88,26 @@ export function iconOf(imageUrl: string): string {
  * @return true if it is, false otherwise
  */
 export function isWhite(piece: Piece): boolean {
-    let icon = iconOf(piece.imageUrl);
     return [PIECE_ICON.whiteBishop,
         PIECE_ICON.whiteKing,
         PIECE_ICON.whiteKnight,
         PIECE_ICON.whitePawn,
         PIECE_ICON.whiteQueen,
         PIECE_ICON.whiteRook]
-        .includes(icon);
+        .includes(iconOf(piece.imageUrl));
+}
+
+/**
+ * Check if the given piece is for black player
+ * @param piece the piece
+ * @return true if it is, false otherwise
+ */
+export function isBlack(piece: Piece): boolean {
+    return [PIECE_ICON.blackBishop,
+        PIECE_ICON.blackKing,
+        PIECE_ICON.blackKnight,
+        PIECE_ICON.blackPawn,
+        PIECE_ICON.blackQueen,
+        PIECE_ICON.blackRook]
+        .includes(iconOf(piece.imageUrl));
 }
