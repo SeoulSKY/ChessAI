@@ -102,12 +102,15 @@ export default function Board() {
      * @param action the action
      */
     async function apply(action: Action) {
+        let boardElement = document.getElementById("board") as HTMLDivElement;
+        boardElement.setAttribute("onmousedown", "return false");
+
         let data = {
             "board": boardOf(getPieces()),
             "action": action
         }
 
-        let response = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
+        let resultResponse = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
             "method": "POST",
             "headers": {
                 "Content-Type": "application/json"
@@ -115,14 +118,43 @@ export default function Board() {
             "body": JSON.stringify(data)
         });
 
-        if (!response.ok) {
-            throw Error(response.statusText);
+        if (!resultResponse.ok) {
+            throw Error(resultResponse.statusText);
         }
 
-        let board = await response.text();
-        console.log(`Response from ${response.url}: `)
+        let board = await resultResponse.text();
+        console.log(`Response from ${resultResponse.url}: `)
         console.log(board)
         piecesOf(board).then(setBoard);
+
+        let decisionResponse = await fetch(encodeURI(`${Globals.AI_SERVER_HOST}api/decision?board=${board}&intelligenceLevel=${3}`));
+        if (!decisionResponse.ok) {
+            throw Error(decisionResponse.statusText);
+        }
+
+        interface BotDecision {
+            timeTaken: string;
+            minimaxValue: number;
+            actionTaken: {
+                piece: {
+                    icon: string,
+                    x: number,
+                    y: number
+                }
+                x: number,
+                y: number
+            }
+            resultBoard: string,
+            numNodesExpanded: number
+        }
+
+        let decision: BotDecision = await decisionResponse.json();
+        console.log(`Response from ${decisionResponse.url}: `);
+        console.log(decision);
+
+        piecesOf(decision.resultBoard).then(setBoard);
+
+        boardElement.removeAttribute("onmousedown");
     }
 
     /**
