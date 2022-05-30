@@ -115,8 +115,10 @@ export default function Tile({x, y, color, piece, onDrop}: Props) {
 
     return (
         <div className={"tile " + color} onDragOver={allowDrop} onDrop={dropPiece} data-x={x} data-y={y}>
-            {piece !== null && <img id={`${piece.imageUrl} ${piece.x} ${piece.y}`} className={"piece"}
-                                    src={piece.imageUrl} draggable={Globals.isWhite(piece)}
+            {piece !== null && <img className={Globals.isWhite(piece) ? "piece draggable" : "piece"}
+                                    id={`${piece.imageUrl} ${piece.x} ${piece.y}`}
+                                    src={piece.imageUrl}
+                                    draggable={Globals.isWhite(piece)}
                                     onDragStart={dragPiece} alt={piece.imageUrl}
                                     data-actions={JSON.stringify(piece.actions)}
                                     data-x={piece.x}

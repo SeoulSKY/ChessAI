@@ -20,6 +20,14 @@
     overflow: hidden;
 }
 
+.draggable {
+
+}
+
+.draggable:hover {
+    cursor: grab;
+}
+
 .action-hint {
     width: 10vmax;
     height: 10vmax;
