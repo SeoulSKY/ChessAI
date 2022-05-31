@@ -50,12 +50,12 @@ public class Pawn extends Piece {
         Position moveOneForward = new Position(x, y + 1);
         if (!this.player.isOccupied(moveOneForward) && !opponent.isOccupied(moveOneForward)) {
             movements.add(moveOneForward);
-        }
 
-        final int INITIAL_ROW = 1;
-        Position moveTwoForward = new Position(x, y + 2);
-        if (!this.player.isOccupied(moveTwoForward) && !opponent.isOccupied(moveTwoForward) && y == INITIAL_ROW) {
-            movements.add(moveTwoForward);
+            final int INITIAL_ROW = 1;
+            Position moveTwoForward = new Position(x, y + 2);
+            if (!this.player.isOccupied(moveTwoForward) && !opponent.isOccupied(moveTwoForward) && y == INITIAL_ROW) {
+                movements.add(moveTwoForward);
+            }
         }
 
         List<Position> attacks = List.of(
@@ -85,12 +85,12 @@ public class Pawn extends Piece {
         Position moveOneForward = new Position(x, y - 1);
         if (!this.player.isOccupied(moveOneForward) && !opponent.isOccupied(moveOneForward)) {
             movements.add(moveOneForward);
-        }
 
-        final int INITIAL_ROW = 6;
-        Position moveTwoForward = new Position(x, y - 2);
-        if (!this.player.isOccupied(moveTwoForward) && !opponent.isOccupied(moveTwoForward) && y == INITIAL_ROW) {
-            movements.add(moveTwoForward);
+            final int INITIAL_ROW = 6;
+            Position moveTwoForward = new Position(x, y - 2);
+            if (!this.player.isOccupied(moveTwoForward) && !opponent.isOccupied(moveTwoForward) && y == INITIAL_ROW) {
+                movements.add(moveTwoForward);
+            }
         }
 
         List<Position> attacks = List.of(

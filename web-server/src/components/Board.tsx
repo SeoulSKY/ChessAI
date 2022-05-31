@@ -11,7 +11,7 @@ import Action from "../models/Action";
  * @return the pieces
  */
 async function piecesOf(board: string): Promise<Piece[][]> {
-    let response = await fetch(encodeURI(`${Globals.AI_SERVER_HOST}/api/actions?board=${board}`));
+    let response = await fetch(encodeURI(`${Globals.AI_SERVER_HOST}api/actions?board=${board}`));
     if (!response.ok) {
         throw Error(response.statusText);
     }

@@ -12,8 +12,8 @@
 }
 
 .piece {
-    width: 10vmax;
-    height: 10vmax;
+    width: 9vmin;
+    height: 9vmin;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 100%;
@@ -29,8 +29,8 @@
 }
 
 .action-hint {
-    width: 10vmax;
-    height: 10vmax;
+    width: 9vmin;
+    height: 9vmin;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 100%;
