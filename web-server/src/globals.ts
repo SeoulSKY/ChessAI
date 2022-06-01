@@ -5,6 +5,8 @@ export const AI_SERVER_HOST = env.AI_SERVER_HOST;
 
 export const BOARD_SIZE = 8;
 
+export const DEFAULT_INTELLIGENCE_LEVEL = 2;
+
 const PIECE_URL = {
     "blackBishop": "assets/black_bishop.png",
     "whiteBishop": "assets/white_bishop.png",
@@ -35,6 +37,8 @@ export const PIECE_ICON = {
     "whiteRook": "♖",
     "none": "□"
 }
+
+export const DEFAULT_PROMOTING_ICON = PIECE_ICON.whiteQueen;
 
 /**
  * Covert the given icon to the image url

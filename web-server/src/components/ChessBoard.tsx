@@ -1,9 +1,10 @@
-import "./Board.css";
+import "./ChessBoard.css";
 import * as Globals from "../globals";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import Tile, {pieceAt} from "./Tile";
 import Piece from "../models/Piece";
 import Action from "../models/Action";
+import {useGameContext} from "../context/GameContext";
 
 /**
  * Get the pieces of the given board
@@ -93,21 +94,24 @@ async function getInitialPieces(): Promise<Piece[][]> {
     return piecesOf(board);
 }
 
-export default function Board() {
+export default function ChessBoard() {
 
+    let boardElement = useRef<HTMLDivElement>(null);
     let [tiles, setTiles] = useState<JSX.Element[]>([]);
+    let {setIsThinking, promotingIcon, intelligenceLevel} = useGameContext();
 
     /**
      * Apply the given action to the current board
      * @param action the action
      */
     async function apply(action: Action) {
-        let boardElement = document.getElementById("board") as HTMLDivElement;
-        boardElement.setAttribute("onmousedown", "return false");
+        setIsThinking(true);
+        boardElement.current!.setAttribute("onmousedown", "return false");
 
         let data = {
             "board": boardOf(getPieces()),
-            "action": action
+            "action": action,
+            "promotingIcon": promotingIcon
         }
 
         let resultResponse = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
@@ -127,7 +131,7 @@ export default function Board() {
         console.log(board)
         piecesOf(board).then(setBoard);
 
-        let decisionResponse = await fetch(encodeURI(`${Globals.AI_SERVER_HOST}api/decision?board=${board}&intelligenceLevel=${3}`));
+        let decisionResponse = await fetch(encodeURI(`${Globals.AI_SERVER_HOST}api/decision?board=${board}&intelligenceLevel=${intelligenceLevel.current}`));
         if (!decisionResponse.ok) {
             throw Error(decisionResponse.statusText);
         }
@@ -154,7 +158,8 @@ export default function Board() {
 
         piecesOf(decision.resultBoard).then(setBoard);
 
-        boardElement.removeAttribute("onmousedown");
+        boardElement.current!.removeAttribute("onmousedown");
+        setIsThinking(false);
     }
 
     /**
@@ -174,12 +179,12 @@ export default function Board() {
     }
 
     useEffect(() => {
-        console.log("Getting the initial board...")
+        console.log("Getting the initial chess board...")
         getInitialPieces().then(setBoard);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
-        <div className="board" id={"board"}>
+        <div className="chess-board" ref={boardElement}>
             {tiles}
         </div>
     )

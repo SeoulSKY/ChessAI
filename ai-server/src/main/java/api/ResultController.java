@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import game.Action;
 import game.Game;
 import game.State;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,6 +19,8 @@ import util.Position;
 @CrossOrigin
 public class ResultController {
 
+    private static final Logger logger = LogManager.getLogger();
+
     protected static final Game game = new Game();
 
     /**
@@ -27,6 +31,8 @@ public class ResultController {
      */
     @PostMapping
     public String result(@RequestBody String json) throws JsonProcessingException {
+        logger.info("Received data:\n{}", json);
+
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonNode = mapper.readTree(json);
 

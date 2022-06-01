@@ -26,6 +26,7 @@ public class DecisionController {
 
         State state = State.parse(board, true);
 
+        logger.info("Received intelligenceLevel: {}", intelligenceLevel);
         logger.info("Received state:\n{}", state);
         logger.info("Thinking...");
         DecisionRecord decisionRecord = bot.decide(state);

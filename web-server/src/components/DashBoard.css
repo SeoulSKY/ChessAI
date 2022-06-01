@@ -1,0 +1,101 @@
+.dashboard{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #F1F1F1;
+    min-width: 35vmin;
+    border-radius: 2vmin;
+}
+
+.dashboard .robot-profile {
+    display: grid;
+    grid-template-areas:
+            "picture name"
+            "picture message";
+    width: 80%;
+    margin-top: 2vmin;
+    margin-bottom: 2vmin;
+}
+
+.robot-profile .profile-picture {
+    grid-area: picture;
+    width: 9vmin;
+    height: 9vmin;
+    background-color: white;
+    border-radius: 20%;
+}
+
+.robot-profile .robot-name {
+    grid-area: name;
+    justify-self: start;
+    margin-top: 1vmin;
+    margin-right: 10vmin;
+}
+
+.robot-profile .robot-message {
+    grid-area: message;
+    justify-self: start;
+    white-space: nowrap;
+    margin-bottom: 1vmin;
+}
+
+.dashboard .score-panel {
+    display: flex;
+    flex-direction: row;
+    width: 80%;
+}
+
+.score-panel .score {
+    justify-self: start;
+    margin-right: auto;
+}
+
+.score-panel .score-help {
+    width: 3vmin;
+    height: 3vmin;
+}
+
+.hover-container {
+    position: relative;
+    display: inline-block;
+}
+
+.hover-container .hover-text {
+    visibility: hidden;
+    width: 240px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: 150%;
+    right: 0;
+    margin-left: -60px;
+}
+
+.hover-container .hover-text::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    right: 4%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent black transparent;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.hover-container:hover .hover-text {
+    visibility: visible;
+}
+
+.dashboard .intelligence-slider {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 80%;
+    margin-top: 2vmin;
+    margin-bottom: 2vmin;
+}

@@ -1,4 +1,4 @@
-.board {
+.chess-board {
     display: grid;
     grid-template-rows: repeat(8, 11vmin);
     grid-template-columns: repeat(8, 11vmin);
