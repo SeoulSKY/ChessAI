@@ -39,6 +39,10 @@
     margin-bottom: 1vmin;
 }
 
+.robot-message .circular-progress {
+    margin-left: 10px;
+}
+
 .dashboard .score-panel {
     display: flex;
     flex-direction: row;
@@ -98,4 +102,17 @@
     width: 80%;
     margin-top: 2vmin;
     margin-bottom: 2vmin;
+}
+
+.dashboard .time-limit-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 80%;
+    margin-top: 2vmin;
+    margin-bottom: 2vmin;
+}
+
+.time-limit-panel .time-limit-switch {
+    margin-right: auto;
 }

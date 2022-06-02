@@ -98,7 +98,7 @@ export default function ChessBoard() {
 
     let boardElement = useRef<HTMLDivElement>(null);
     let [tiles, setTiles] = useState<JSX.Element[]>([]);
-    let {setIsThinking, promotingIcon, intelligenceLevel} = useGameContext();
+    let {setIsThinking, promotingIcon, intelligenceLevel, setMinimaxValue} = useGameContext();
 
     /**
      * Apply the given action to the current board
@@ -167,6 +167,10 @@ export default function ChessBoard() {
      * @param pieces the pieces
      */
     function setBoard(pieces: Piece[][]) {
+        fetch(encodeURI(`${Globals.AI_SERVER_HOST}/api/evaluation?board=${boardOf(pieces)}`))
+            .then(response => response.text())
+            .then(value => setMinimaxValue(Number(Number(value).toFixed(2))));
+
         let arr: JSX.Element[] = [];
         for (let i = 0; i < Globals.BOARD_SIZE; i++) {
             for (let j = 0; j < Globals.BOARD_SIZE; j++) {

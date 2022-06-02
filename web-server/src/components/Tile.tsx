@@ -25,6 +25,9 @@ function dragPiece(event: React.DragEvent) {
         let tile = tileAt(action.x, action.y);
         if (tile.hasChildNodes()) {
             let anotherPieceImage = tile.getElementsByTagName("img").item(0)!;
+            if (anotherPieceImage === null) {
+                return;
+            }
             anotherPieceImage.classList.add("attack-hint");
         } else {
             let actionHint = document.createElement("div") as HTMLDivElement;

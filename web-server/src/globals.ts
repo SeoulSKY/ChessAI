@@ -7,6 +7,10 @@ export const BOARD_SIZE = 8;
 
 export const DEFAULT_INTELLIGENCE_LEVEL = 2;
 
+export const DEFAULT_TIME_LIMIT_IN_SECONDS = 20;
+
+export const MIN_TIME_LIMIT_IN_SECONDS = 5;
+
 const PIECE_URL = {
     "blackBishop": "assets/black_bishop.png",
     "whiteBishop": "assets/white_bishop.png",
