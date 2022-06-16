@@ -5,7 +5,7 @@ import helpIcon from "../assets/help_icon.png";
 import CircularProgress from "@mui/material/CircularProgress";
 import Slider from "@mui/material/Slider";
 import * as Globals from "../globals";
-import {SyntheticEvent, useState} from "react";
+import {FormEvent, MouseEventHandler, SyntheticEvent, useState} from "react";
 
 import {LocalizationProvider} from "@mui/x-date-pickers";
 import {TimePicker} from "@mui/x-date-pickers";
@@ -18,7 +18,7 @@ import Switch from "@mui/material/Switch";
 export default function Dashboard() {
     const TIME_LIMIT_LABEL = "AI's Time Limit";
 
-    let {isThinking, intelligenceLevel, minimaxValue, timeLimit} = useGameContext();
+    let {isThinking, intelligenceLevel, minimaxValue, timeLimit, promotingIcon} = useGameContext();
     let [timeInput, setTimeInput] = useState<Duration | null>(null);
     let [timeLabel, setTimeLabel] = useState(TIME_LIMIT_LABEL);
     let [isTimeDisabled, setIsTimeDisabled] = useState(true);
@@ -27,10 +27,15 @@ export default function Dashboard() {
         intelligenceLevel.current = Array.isArray(val) ? val[0]: val;
     }
 
+    function selectPromotingPiece(event: FormEvent<HTMLFormElement>) {
+        let target = event.target as HTMLInputElement;
+        promotingIcon.current = target.value;
+    }
+
     return (
         <div className={"dashboard"}>
             <div className={"robot-profile"}>
-                <img className={"profile-picture"} src={robotProfilePicture} alt={"robot profile"}></img>
+                <img className={"profile-picture"} src={robotProfilePicture} alt={"robot profile"} draggable={false}/>
                 <p className={"robot-name"}>Chess AI</p>
 
                 {isThinking && <div className={"robot-message"}>
@@ -42,9 +47,9 @@ export default function Dashboard() {
             <div className={"score-panel"}>
                 <span className={"score"}>Score: {minimaxValue}</span>
                 <div className={"hover-container"}>
-                    <img className={"score-help"} src={helpIcon} alt={"helpIcon"}></img>
+                    <img className={"score-help"} src={helpIcon} alt={"helpIcon"} draggable={false}/>
                     <span className={"hover-text"}>
-                        {"A positive number means that Black's position is better. A negative means things look better for White."}
+                        {"A positive number means that White's position is better. A negative means things look better for Black."}
                     </span>
                 </div>
             </div>
@@ -57,7 +62,7 @@ export default function Dashboard() {
             <div className={"time-limit-panel"}>
                 <LocalizationProvider dateAdapter={AdapterMoment}>
                     <TimePicker
-                        disabled={isTimeDisabled}
+                        disabled={isTimeDisabled || isThinking}
                         views={['minutes', 'seconds']}
                         inputFormat="mm:ss"
                         mask="__:__"
@@ -85,6 +90,35 @@ export default function Dashboard() {
                         }
                     }}/>
                 </LocalizationProvider>
+            </div>
+            <div className={"promoting-piece-panel"}>
+                <label className={"promoting-label"}>{"Piece to Promote"}</label>
+                <form className={"radio-group"} onChange={selectPromotingPiece}>
+                    <label>
+                        <input type="radio" name="promoting-piece" value={Globals.PIECE_ICON.whiteQueen}
+                               defaultChecked={Globals.isDefaultPromotingIcon(Globals.PIECE_ICON.whiteQueen)}
+                               disabled={isThinking}/>
+                        <img className={"queen"} src={Globals.PIECE_URL.whiteQueen} alt={"queen"} draggable={false}/>
+                    </label>
+                    <label>
+                        <input type="radio" name="promoting-piece" value={Globals.PIECE_ICON.whiteRook}
+                               defaultChecked={Globals.isDefaultPromotingIcon(Globals.PIECE_ICON.whiteRook)}
+                               disabled={isThinking}/>
+                        <img className={"rook"} src={Globals.PIECE_URL.whiteRook} alt={"rook"} draggable={false}/>
+                    </label>
+                    <label>
+                        <input type="radio" name="promoting-piece" value={Globals.PIECE_ICON.whiteKnight}
+                               defaultChecked={Globals.isDefaultPromotingIcon(Globals.PIECE_ICON.whiteKnight)}
+                               disabled={isThinking} />
+                        <img className={"knight"} src={Globals.PIECE_URL.whiteKnight} alt={"knight"} draggable={false}/>
+                    </label>
+                    <label>
+                        <input type="radio" name="promoting-piece" value={Globals.PIECE_ICON.whiteBishop}
+                               defaultChecked={Globals.isDefaultPromotingIcon(Globals.PIECE_ICON.whiteBishop)}
+                               disabled={isThinking}/>
+                        <img className={"bishop"} src={Globals.PIECE_URL.whiteBishop} alt={"bishop"} draggable={false}/>
+                    </label>
+                </form>
             </div>
         </div>
     )

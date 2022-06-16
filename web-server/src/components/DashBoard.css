@@ -116,3 +116,70 @@
 .time-limit-panel .time-limit-switch {
     margin-right: auto;
 }
+
+.dashboard .promoting-piece-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 2vmin;
+    margin-bottom: 2vmin;
+}
+
+.promoting-piece-panel .radio-group {
+    display: grid;
+    grid-template-areas:
+        "queen rook"
+        "knight bishop";
+}
+
+.promoting-piece-panel .promoting-label{
+    margin-left: 1vmin;
+}
+
+.radio-group .queen {
+    grid-area: queen;
+    width: 13vmin;
+    height: 13vmin;
+    margin: 1vmin;
+}
+
+.radio-group .rook {
+    grid-area: rook;
+    width: 13vmin;
+    height: 13vmin;
+    margin: 1vmin;
+}
+
+.radio-group .knight {
+    grid-area: knight;
+    width: 13vmin;
+    height: 13vmin;
+    margin: 1vmin;
+}
+
+.radio-group .bishop {
+    grid-area: bishop;
+    width: 13vmin;
+    height: 13vmin;
+    margin: 1vmin;
+}
+
+[type=radio] {
+    position: absolute;
+    opacity: 0;
+}
+
+[type=radio]+img {
+    cursor: pointer;
+    outline: 3px solid #909090;
+    border-radius: 10%;
+}
+
+[type=radio]:checked + img {
+    outline: 3px solid #1976D2;
+    border-radius: 10%;
+}
+
+[type=radio]:disabled + img {
+    filter: opacity(20%);
+}

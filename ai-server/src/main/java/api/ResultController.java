@@ -49,7 +49,7 @@ public class ResultController {
         x = mapper.convertValue(actionNode.get("x"), int.class);
         y = mapper.convertValue(actionNode.get("y"), int.class);
 
-        Character promotingIcon = mapper.convertValue(actionNode.get("promotingIcon"), Character.class);
+        Character promotingIcon = mapper.convertValue(jsonNode.get("promotingIcon"), Character.class);
 
         Piece piece = state.getHumanPlayer().findPieceAt(oldPosition)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,

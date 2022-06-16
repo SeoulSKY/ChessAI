@@ -11,7 +11,7 @@ export const DEFAULT_TIME_LIMIT_IN_SECONDS = 20;
 
 export const MIN_TIME_LIMIT_IN_SECONDS = 5;
 
-const PIECE_URL = {
+export const PIECE_URL = {
     "blackBishop": "assets/black_bishop.png",
     "whiteBishop": "assets/white_bishop.png",
     "blackKing": "assets/black_king.png",
@@ -43,6 +43,15 @@ export const PIECE_ICON = {
 }
 
 export const DEFAULT_PROMOTING_ICON = PIECE_ICON.whiteQueen;
+
+/**
+ * Check if the given icon is the default promoting icon
+ * @param icon the icon
+ * @return true if it is, false otherwise
+ */
+export function isDefaultPromotingIcon(icon: string): boolean {
+    return icon === DEFAULT_PROMOTING_ICON;
+}
 
 /**
  * Covert the given icon to the image url
