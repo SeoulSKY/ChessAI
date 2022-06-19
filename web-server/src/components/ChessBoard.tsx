@@ -98,7 +98,7 @@ export default function ChessBoard() {
 
     let boardElement = useRef<HTMLDivElement>(null);
     let [tiles, setTiles] = useState<JSX.Element[]>([]);
-    let {setIsThinking, promotingIcon, intelligenceLevel, setMinimaxValue} = useGameContext();
+    let {setIsThinking, promotingIcon, intelligenceLevel, setMinimaxValue, timeLimit} = useGameContext();
 
     /**
      * Apply the given action to the current board
@@ -111,7 +111,7 @@ export default function ChessBoard() {
         let data = {
             "board": boardOf(getPieces()),
             "action": action,
-            "promotingIcon": promotingIcon
+            "promotingIcon": promotingIcon.current
         }
 
         let resultResponse = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
@@ -131,7 +131,12 @@ export default function ChessBoard() {
         console.log(board)
         piecesOf(board).then(setBoard);
 
-        let decisionResponse = await fetch(encodeURI(`${Globals.AI_SERVER_HOST}api/decision?board=${board}&intelligenceLevel=${intelligenceLevel.current}`));
+        let url = `${Globals.AI_SERVER_HOST}api/decision?board=${board}&intelligenceLevel=${intelligenceLevel.current}`;
+        if (timeLimit.current !== null) {
+            url += `&timeLimit=${timeLimit.current}`;
+        }
+
+        let decisionResponse = await fetch(encodeURI(url));
         if (!decisionResponse.ok) {
             throw Error(decisionResponse.statusText);
         }
@@ -169,7 +174,7 @@ export default function ChessBoard() {
     function setBoard(pieces: Piece[][]) {
         fetch(encodeURI(`${Globals.AI_SERVER_HOST}/api/evaluation?board=${boardOf(pieces)}`))
             .then(response => response.text())
-            .then(value => setMinimaxValue(Number(Number(value).toFixed(2))));
+            .then(value => setMinimaxValue(-Number(Number(value).toFixed(2))));
 
         let arr: JSX.Element[] = [];
         for (let i = 0; i < Globals.BOARD_SIZE; i++) {

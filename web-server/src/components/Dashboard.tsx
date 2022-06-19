@@ -5,14 +5,13 @@ import helpIcon from "../assets/help_icon.png";
 import CircularProgress from "@mui/material/CircularProgress";
 import Slider from "@mui/material/Slider";
 import * as Globals from "../globals";
-import {FormEvent, MouseEventHandler, SyntheticEvent, useState} from "react";
+import {FormEvent, SyntheticEvent, useRef, useState} from "react";
 
-import {LocalizationProvider} from "@mui/x-date-pickers";
-import {TimePicker} from "@mui/x-date-pickers";
+import {LocalizationProvider, TimePicker} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import TextField from "@mui/material/TextField";
-import {duration, Duration} from "moment";
 import Switch from "@mui/material/Switch";
+import {duration, Duration} from "moment";
 
 
 export default function Dashboard() {
@@ -22,6 +21,8 @@ export default function Dashboard() {
     let [timeInput, setTimeInput] = useState<Duration | null>(null);
     let [timeLabel, setTimeLabel] = useState(TIME_LIMIT_LABEL);
     let [isTimeDisabled, setIsTimeDisabled] = useState(true);
+
+    let timePicker = useRef<HTMLInputElement>(null);
 
     function handleSliderChange(_: SyntheticEvent | Event, val: number | number[]) {
         intelligenceLevel.current = Array.isArray(val) ? val[0]: val;
@@ -62,6 +63,7 @@ export default function Dashboard() {
             <div className={"time-limit-panel"}>
                 <LocalizationProvider dateAdapter={AdapterMoment}>
                     <TimePicker
+                        inputRef={timePicker}
                         disabled={isTimeDisabled || isThinking}
                         views={['minutes', 'seconds']}
                         inputFormat="mm:ss"
@@ -70,7 +72,15 @@ export default function Dashboard() {
                         value={timeInput}
                         minTime={duration(Globals.MIN_TIME_LIMIT_IN_SECONDS, "seconds")}
                         renderInput={(params) => <TextField {...params} />}
-                        onChange={(newValue: Duration | null) => setTimeInput(newValue)}
+                        onChange={(newValue: Duration | null) => {
+                            setTimeInput(newValue);
+                            if (newValue === null || !newValue.isValid()) {
+                                return;
+                            }
+
+                            let [minutes, seconds] = timePicker.current!.value.split(":").map(Number);
+                            timeLimit.current = duration({minutes, seconds}).asSeconds();
+                        }}
                         onError={(error) => {
                             if (error === "invalidDate") {
                                 setTimeLabel("Time format is invalid");
@@ -80,13 +90,17 @@ export default function Dashboard() {
                                 setTimeLabel(TIME_LIMIT_LABEL);
                             }
                         }}
-                        onAccept={(newValue: Duration | null) => timeLimit.current = newValue!}
                     />
-                    <Switch className={"time-limit-switch"} onChange={(event) => {
+                    <Switch className={"time-limit-switch"} disabled={isThinking} onClick={(event) => {
                         let toggleSwitch = event.target as HTMLInputElement;
                         setIsTimeDisabled(!toggleSwitch.checked);
-                        if (!toggleSwitch.checked) {
+
+                        let [minutes, seconds] = timePicker.current!.value.split(":").map(Number);
+
+                        if (!toggleSwitch.checked || isNaN(minutes) || isNaN(seconds) ||  minutes > 59 || seconds > 59) {
                             timeLimit.current = null;
+                        } else {
+                            timeLimit.current = minutes*60 + seconds;
                         }
                     }}/>
                 </LocalizationProvider>

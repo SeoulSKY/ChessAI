@@ -182,4 +182,5 @@
 
 [type=radio]:disabled + img {
     filter: opacity(20%);
+    cursor: default;
 }

@@ -1,5 +1,4 @@
 import React, {useContext} from "react";
-import {Duration} from "moment";
 
 interface GameState {
     isThinking: boolean,
@@ -8,7 +7,7 @@ interface GameState {
     promotingIcon: React.MutableRefObject<string>
     minimaxValue: number
     setMinimaxValue: React.Dispatch<React.SetStateAction<number>>
-    timeLimit: React.MutableRefObject<Duration | null>;
+    timeLimit: React.MutableRefObject<Number | null>;
 }
 
 export const GameContext = React.createContext<GameState | undefined>(undefined);
