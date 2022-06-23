@@ -105,6 +105,44 @@ export default function ChessBoard() {
      * @param action the action
      */
     async function apply(action: Action) {
+        interface Result {
+            board: string,
+            winner?: string | null
+        }
+
+        /**
+         * Check if the game is over
+         * @param result true if it is, false otherwise
+         */
+        function isGameOver(result: Result) {
+            return result.winner !== undefined;
+        }
+
+        function handleGameTermination(result: Result) {
+            if (!isGameOver(result)) {
+                return;
+            }
+
+            setTimeout(() => {
+                let message;
+                if (result.winner === "black") {
+                    message = "You Lost!";
+                } else if (result.winner === "white") {
+                    message = "You Won!";
+                } else {
+                    message = "Draw!";
+                }
+
+                alert(message);
+                getInitialPieces()
+                    .then(setBoard)
+                    .finally(() => {
+                        setIsThinking(false);
+                        boardElement.current!.removeAttribute("onmousedown");
+                    });
+            }, 0);
+        }
+
         setIsThinking(true);
         boardElement.current!.setAttribute("onmousedown", "return false");
 
@@ -126,12 +164,17 @@ export default function ChessBoard() {
             throw Error(resultResponse.statusText);
         }
 
-        let board = await resultResponse.text();
+        let result: Result = await resultResponse.json();
         console.log(`Response from ${resultResponse.url}: `)
-        console.log(board)
-        piecesOf(board).then(setBoard);
+        console.log(result)
+        piecesOf(result.board).then(setBoard);
 
-        let url = `${Globals.AI_SERVER_HOST}api/decision?board=${board}&intelligenceLevel=${intelligenceLevel.current}`;
+        if (isGameOver(result)) {
+            handleGameTermination(result);
+            return;
+        }
+
+        let url = `${Globals.AI_SERVER_HOST}api/decision?board=${result.board}&intelligenceLevel=${intelligenceLevel.current}`;
         if (timeLimit.current !== null) {
             url += `&timeLimit=${timeLimit.current}`;
         }
@@ -153,18 +196,22 @@ export default function ChessBoard() {
                 x: number,
                 y: number
             }
-            resultBoard: string,
+            result: Result,
             numNodesExpanded: number
         }
 
         let decision: BotDecision = await decisionResponse.json();
+        result = decision.result
         console.log(`Response from ${decisionResponse.url}: `);
         console.log(decision);
 
-        piecesOf(decision.resultBoard).then(setBoard);
-
-        boardElement.current!.removeAttribute("onmousedown");
-        setIsThinking(false);
+        piecesOf(result.board)
+            .then(setBoard)
+            .then(() => handleGameTermination(result))
+            .finally(() => {
+                boardElement.current!.removeAttribute("onmousedown");
+                setIsThinking(false);
+            });
     }
 
     /**
