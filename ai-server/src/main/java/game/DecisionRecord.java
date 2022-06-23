@@ -1,5 +1,7 @@
 package game;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.time.Duration;
 
 /**
@@ -9,6 +11,6 @@ public record DecisionRecord(
         Duration timeTaken,
         double minimaxValue,
         Action actionTaken,
-        String resultBoard,
+        ObjectNode result,
         int numNodesExpanded
 ) {}

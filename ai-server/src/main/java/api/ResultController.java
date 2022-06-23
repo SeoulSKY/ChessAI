@@ -3,6 +3,7 @@ package api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import game.Action;
 import game.Game;
 import game.State;
@@ -30,7 +31,7 @@ public class ResultController {
      * @throws JsonProcessingException when the given request body is not a valid json
      */
     @PostMapping
-    public String result(@RequestBody String json) throws JsonProcessingException {
+    public ObjectNode result(@RequestBody String json) throws JsonProcessingException {
         logger.info("Received data:\n{}", json);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -57,6 +58,6 @@ public class ResultController {
 
         Action action = new Action(piece, new Position(x, y));
 
-        return game.result(state, action, promotingIcon).toString();
+        return game.result(state, action, promotingIcon).toJSON();
     }
 }

@@ -72,7 +72,7 @@ public class Bot {
         Instant endTime = Instant.now();
         Duration timeTaken = Duration.between(startTime, endTime);
 
-        return new DecisionRecord(timeTaken, minimaxValue , bestAction, nextState.toString(), this.numNodesExpanded);
+        return new DecisionRecord(timeTaken, minimaxValue, bestAction, nextState.toJSON(), this.numNodesExpanded);
     }
 
     /**

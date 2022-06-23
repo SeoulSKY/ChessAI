@@ -1,5 +1,7 @@
 package game;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -136,6 +138,26 @@ public class State implements Cloneable {
         }
 
         return builder.toString();
+    }
+
+    /**
+     * Convert this state to json
+     * @return the json
+     */
+    public ObjectNode toJSON() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode json = mapper.createObjectNode();
+        json.put("board", this.toString());
+
+        if (this.isTerminal()) {
+            String winner = null;
+            if (this.getWinner().isPresent()) {
+                winner = this.getWinner().get().isBot() ? "black" : "white";
+            }
+            json.put("winner", winner);
+        }
+
+        return json;
     }
 
     /**
