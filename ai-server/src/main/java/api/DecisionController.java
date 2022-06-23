@@ -74,7 +74,7 @@ public class DecisionController {
                 decisionRecord.actionTaken().piece().toString(), decisionRecord.actionTaken(), decisionRecord.minimaxValue(),
                 (decisionRecord.timeTaken().toMillis() / 1000.0), decisionRecord.numNodesExpanded());
 
-        logger.info("Result:\n{}", decisionRecord.result());
+        logger.info("Result:{}", decisionRecord.result());
 
         return decisionRecord;
     }
