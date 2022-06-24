@@ -6,4 +6,5 @@ build:
         NODE_ENV: production
 
 run:
-  web: npm run build && serve -s build
+  web-server: npm run build && serve -s build
+  
