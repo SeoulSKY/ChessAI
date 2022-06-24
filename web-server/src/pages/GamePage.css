@@ -1,3 +1,8 @@
 .game-page {
-    display: flex;
+    display: inline-flex;
+    border-radius: 2vmin;
+    justify-content: center;
+    overflow: hidden;
+    margin-top: 2vmin;
+    margin-bottom: 2vmin;
 }

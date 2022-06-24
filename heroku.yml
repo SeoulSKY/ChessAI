@@ -1,0 +1,9 @@
+build: 
+    docker: 
+        web-server: web-server/Dockerfile 
+        ai-server: ai-server/Dockerfile 
+    config: 
+        NODE_ENV: production
+
+run:
+  web: npm run build && serve -s build
