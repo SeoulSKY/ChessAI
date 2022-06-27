@@ -4,6 +4,19 @@ import React, {useRef, useState} from "react";
 import {GameContext} from "../context/GameContext";
 import * as Globals from "../globals";
 import "./GamePage.css";
+import {ErrorBoundary, FallbackProps} from "react-error-boundary";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import CircularProgress from "@mui/material/CircularProgress";
+
+function errorHandler({error}: FallbackProps) {
+    return (
+        <Alert severity="error">
+            <AlertTitle>Error Occurred</AlertTitle>
+            {error.message}
+        </Alert>
+    )
+}
 
 export default function GamePage() {
 
@@ -15,12 +28,16 @@ export default function GamePage() {
 
     return (
         <div className={"game-page"}>
-            <GameContext.Provider value={{
-                isThinking, setIsThinking, intelligenceLevel, promotingIcon, minimaxValue, setMinimaxValue, timeLimit
-            }}>
-                <ChessBoard/>
-                <Dashboard/>
-            </GameContext.Provider>
+            <ErrorBoundary FallbackComponent={errorHandler}>
+                <React.Suspense fallback={<CircularProgress />}>
+                    <GameContext.Provider value={{
+                        isThinking, setIsThinking, intelligenceLevel, promotingIcon, minimaxValue, setMinimaxValue, timeLimit
+                    }}>
+                        <ChessBoard/>
+                        <Dashboard/>
+                    </GameContext.Provider>
+                </React.Suspense>
+            </ErrorBoundary>
         </div>
     )
 }

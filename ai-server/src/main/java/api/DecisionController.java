@@ -5,7 +5,10 @@ import game.DecisionRecord;
 import game.State;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,9 +35,9 @@ public class DecisionController {
     @GetMapping
     public DecisionRecord decision(@RequestParam int intelligenceLevel, @RequestParam String board, @RequestParam Optional<Integer> timeLimit) {
         if (intelligenceLevel < 0) {
-            throw new IllegalArgumentException("intelligenceLevel cannot be less than 0. Given: " + intelligenceLevel);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "intelligenceLevel cannot be less than 0. Given: " + intelligenceLevel);
         } else if (timeLimit.isPresent() && timeLimit.get() < 5) {
-            throw new IllegalArgumentException("timeLimit cannot be less than 5. Given: " + timeLimit);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "timeLimit cannot be less than 5. Given: " + timeLimit.get());
         }
 
         State state = State.parse(board, true);

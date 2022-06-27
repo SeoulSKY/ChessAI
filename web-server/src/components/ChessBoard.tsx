@@ -5,6 +5,7 @@ import Tile, {pieceAt} from "./Tile";
 import Piece from "../models/Piece";
 import Action from "../models/Action";
 import {useGameContext} from "../context/GameContext";
+import useAsyncError from "../context/AsyncErrorContext";
 
 /**
  * Get the pieces of the given board
@@ -78,27 +79,29 @@ function getPieces(): Piece[][] {
     return pieces;
 }
 
-/**
- * Get the pieces of the initial board
- * @return the initial pieces
- */
-async function getInitialPieces(): Promise<Piece[][]> {
-    let response = await fetch(`${Globals.AI_SERVER_HOST}api/initial-board`);
-    if (!response.ok) {
-        throw new Error(response.statusText);
-    }
-
-    let board = await response.text();
-    console.log(`Response from ${response.url}`);
-    console.log(board);
-    return piecesOf(board);
-}
-
 export default function ChessBoard() {
 
     let boardElement = useRef<HTMLDivElement>(null);
     let [tiles, setTiles] = useState<JSX.Element[]>([]);
     let {setIsThinking, promotingIcon, intelligenceLevel, setMinimaxValue, timeLimit} = useGameContext();
+    let throwError = useAsyncError();
+
+    /**
+     * Get the pieces of the initial board
+     * @return the initial pieces
+     */
+    async function getInitialPieces(): Promise<Piece[][]> {
+        let response = await fetch(`${Globals.AI_SERVER_HOST}api/initial-board`);
+
+        if (!response.ok) {
+            throw Error(response.statusText);
+        }
+
+        let board = await response.text();
+        console.log(`Response from ${response.url}`);
+        console.log(board);
+        return piecesOf(board);
+    }
 
     /**
      * Apply the given action to the current board
@@ -136,6 +139,7 @@ export default function ChessBoard() {
                 alert(message);
                 getInitialPieces()
                     .then(setBoard)
+                    .catch(throwError)
                     .finally(() => {
                         setIsThinking(false);
                         boardElement.current!.removeAttribute("onmousedown");
@@ -152,13 +156,19 @@ export default function ChessBoard() {
             "promotingIcon": promotingIcon.current
         }
 
-        let resultResponse = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
-            "method": "POST",
-            "headers": {
-                "Content-Type": "application/json"
-            },
-            "body": JSON.stringify(data)
-        });
+        let resultResponse;
+        try {
+            resultResponse = await fetch(`${Globals.AI_SERVER_HOST}api/result`, {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": JSON.stringify(data)
+            });
+        } catch (e: any) {
+            throwError(new Error(e + ". Make sure if the AI server is running."));
+            throw e;
+        }
 
         if (!resultResponse.ok) {
             throw Error(resultResponse.statusText);
@@ -222,7 +232,6 @@ export default function ChessBoard() {
         fetch(encodeURI(`${Globals.AI_SERVER_HOST}/api/evaluation?board=${boardOf(pieces)}`))
             .then(response => response.text())
             .then(value => setMinimaxValue(-Number(Number(value).toFixed(2))));
-
         let arr: JSX.Element[] = [];
         for (let i = 0; i < Globals.BOARD_SIZE; i++) {
             for (let j = 0; j < Globals.BOARD_SIZE; j++) {
@@ -236,7 +245,7 @@ export default function ChessBoard() {
 
     useEffect(() => {
         console.log("Getting the initial chess board...")
-        getInitialPieces().then(setBoard);
+        getInitialPieces().then(setBoard).catch(() => throwError(new Error("Failed to connect to the AI server.")));
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (

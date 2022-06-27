@@ -3,6 +3,7 @@ import React from "react";
 import * as Globals from "../globals";
 import Action from "../models/Action";
 import Piece from "../models/Piece";
+import useAsyncError from "../context/AsyncErrorContext";
 
 interface Props {
     x: number;
@@ -74,6 +75,8 @@ export function pieceAt(x: number, y: number): Piece | null {
 
 export default function Tile({x, y, color, piece, onDrop}: Props) {
 
+    let throwError = useAsyncError();
+
     function dropPiece(event: React.DragEvent) {
         event.preventDefault();
 
@@ -117,7 +120,8 @@ export default function Tile({x, y, color, piece, onDrop}: Props) {
         whitePieceElements.forEach(piece => piece.classList.remove("draggable"));
 
         onDrop(action)
-            .then(() => whitePieceElements.forEach(piece => piece.classList.add("draggable")));
+            .then(() => whitePieceElements.forEach(piece => piece.classList.add("draggable")))
+            .catch(throwError);
     }
 
     return (

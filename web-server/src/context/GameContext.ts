@@ -7,7 +7,7 @@ interface GameState {
     promotingIcon: React.MutableRefObject<string>
     minimaxValue: number
     setMinimaxValue: React.Dispatch<React.SetStateAction<number>>
-    timeLimit: React.MutableRefObject<Number | null>;
+    timeLimit: React.MutableRefObject<Number | null>
 }
 
 export const GameContext = React.createContext<GameState | undefined>(undefined);

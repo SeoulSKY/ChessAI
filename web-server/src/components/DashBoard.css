@@ -112,6 +112,10 @@
     margin-bottom: 2vmin;
 }
 
+.time-limit-panel .time-limit-input {
+    width: 100%;
+}
+
 .time-limit-panel .time-limit-switch {
     margin-right: auto;
 }

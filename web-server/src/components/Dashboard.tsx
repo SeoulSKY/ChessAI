@@ -7,22 +7,27 @@ import Slider from "@mui/material/Slider";
 import * as Globals from "../globals";
 import {FormEvent, SyntheticEvent, useRef, useState} from "react";
 
-import {LocalizationProvider, TimePicker} from "@mui/x-date-pickers";
-import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import TextField from "@mui/material/TextField";
 import Switch from "@mui/material/Switch";
-import {duration, Duration} from "moment";
 
 
 export default function Dashboard() {
-    const TIME_LIMIT_LABEL = "AI's Time Limit";
 
     let {isThinking, intelligenceLevel, minimaxValue, timeLimit, promotingIcon} = useGameContext();
-    let [timeInput, setTimeInput] = useState<Duration | null>(null);
-    let [timeLabel, setTimeLabel] = useState(TIME_LIMIT_LABEL);
     let [isTimeDisabled, setIsTimeDisabled] = useState(true);
+    let [timeError, setTimeError] = useState<string | null>(null);
 
     let timePicker = useRef<HTMLInputElement>(null);
+
+    function handleTimeLimit(seconds: number) {
+        if (seconds < Globals.MIN_TIME_LIMIT_IN_SECONDS) {
+            setTimeError(`Must be at least ${Globals.MIN_TIME_LIMIT_IN_SECONDS} seconds`);
+            timeLimit.current = null;
+        } else {
+            setTimeError(null);
+            timeLimit.current = seconds;
+        }
+    }
 
     function handleSliderChange(_: SyntheticEvent | Event, val: number | number[]) {
         intelligenceLevel.current = Array.isArray(val) ? val[0]: val;
@@ -61,49 +66,40 @@ export default function Dashboard() {
                         onChange={handleSliderChange}/>
             </div>
             <div className={"time-limit-panel"}>
-                <LocalizationProvider dateAdapter={AdapterMoment}>
-                    <TimePicker
-                        inputRef={timePicker}
-                        disabled={isTimeDisabled || isThinking}
-                        views={['minutes', 'seconds']}
-                        inputFormat="mm:ss"
-                        mask="__:__"
-                        label={timeLabel}
-                        value={timeInput}
-                        minTime={duration(Globals.MIN_TIME_LIMIT_IN_SECONDS, "seconds")}
-                        renderInput={(params) => <TextField {...params} />}
-                        onChange={(newValue: Duration | null) => {
-                            setTimeInput(newValue);
-                            if (newValue === null || !newValue.isValid()) {
-                                return;
-                            }
+                <TextField
+                    className={"time-limit-input"}
+                    inputRef={timePicker}
+                    label={"AI's Time Limit"}
+                    error={timeError !== null}
+                    disabled={isTimeDisabled || isThinking}
+                    type="time"
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    helperText={timeError === null ? "mm:ss" : timeError}
+                    defaultValue={"00:00"}
 
-                            let [minutes, seconds] = timePicker.current!.value.split(":").map(Number);
-                            timeLimit.current = duration({minutes, seconds}).asSeconds();
-                        }}
-                        onError={(error) => {
-                            if (error === "invalidDate") {
-                                setTimeLabel("Time format is invalid");
-                            } else if (error === "minTime") {
-                                setTimeLabel(`Time limit must be at least ${Globals.MIN_TIME_LIMIT_IN_SECONDS} seconds`);
-                            } else {
-                                setTimeLabel(TIME_LIMIT_LABEL);
-                            }
-                        }}
-                    />
-                    <Switch className={"time-limit-switch"} disabled={isThinking} onClick={(event) => {
-                        let toggleSwitch = event.target as HTMLInputElement;
-                        setIsTimeDisabled(!toggleSwitch.checked);
-
-                        let [minutes, seconds] = timePicker.current!.value.split(":").map(Number);
-
-                        if (!toggleSwitch.checked || isNaN(minutes) || isNaN(seconds) ||  minutes > 59 || seconds > 59) {
-                            timeLimit.current = null;
-                        } else {
-                            timeLimit.current = minutes*60 + seconds;
+                    onChange={(event) => {
+                        if (event.target.value === "") {
+                            event.target.value = "00:00";
                         }
-                    }}/>
-                </LocalizationProvider>
+
+                        let [minutes, seconds] = event.target.value.split(":").map(Number);
+                        handleTimeLimit(minutes*60 + seconds);
+                    }}
+                />
+                <Switch className={"time-limit-switch"} disabled={isThinking} onClick={(event) => {
+                    if (!isTimeDisabled) {
+                        setTimeError(null);
+                        timeLimit.current = null;
+                    } else {
+                        let [minutes, seconds] = timePicker.current!.value.split(":").map(Number);
+                        handleTimeLimit(minutes*60 + seconds);
+                    }
+                    let toggleSwitch = event.target as HTMLInputElement;
+                    setIsTimeDisabled(!toggleSwitch.checked);
+
+                }}/>
             </div>
             <div className={"promoting-piece-panel"}>
                 <label className={"promoting-label"}>{"Piece to Promote"}</label>

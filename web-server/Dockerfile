@@ -6,9 +6,12 @@ COPY . .
 
 RUN npm install
 
-ENV HOST="0.0.0.0"
-ENV PORT=80
+ENV PORT=8080
 
-EXPOSE 80
+EXPOSE 8080
 
-CMD npm start
+RUN npm run build
+
+RUN npm install -g serve
+
+CMD serve -s build
