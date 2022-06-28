@@ -13,3 +13,6 @@ sudo docker-compose up --build
 ```
 
 When `web-server` prints `Accepting connections at http://localhost:8080` and `ai-server` prints `AI Server is up and running. Ready to receive requests`, it is ready to be used. Then, visit [here](http://localhost:8080) to play chess against AI.
+
+## AI Server API
+Visit [here](https://seoulsky.github.io/chess-ai/) to read the document.
