@@ -1,7 +1,6 @@
-import env from "react-dotenv";
 import Piece from "./models/Piece";
 
-export const AI_SERVER_HOST = env.AI_SERVER_HOST;
+export const AI_SERVER_HOST = "http://localhost:5555/";
 
 export const BOARD_SIZE = 8;
 
