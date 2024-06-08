@@ -9,9 +9,13 @@
 
 ## Feature Overview
 
-| `Play` | `Customize` |
-| -- | -- |
-| <img src="https://github.com/SeoulSKY/ChessAI/blob/master/assets/play.gif" alt="play"> | <img src="https://github.com/SeoulSKY/ChessAI/blob/master/assets/customize.gif" alt="customize">
+### Play
+
+![play](https://github.com/SeoulSKY/ChessAI/blob/master/assets/play.gif)
+
+### Customize
+
+![customize](https://github.com/SeoulSKY/ChessAI/blob/master/assets/customize.gif)
 
 ## How to run
 
