@@ -19,7 +19,7 @@
 
 ## How to run
 
-This application requires [Docker](https://www.docker.com/get-started) Please install it first.
+This application requires [Docker](https://www.docker.com/get-started). Please install it first.
 
 To run the app, use the following command:
 
